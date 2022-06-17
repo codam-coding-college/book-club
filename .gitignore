@@ -1,3 +1,9 @@
+# Generic build directory names
+dist/
+build/
+target/
+Cargo.lock
+
 # Prerequisites
 *.d
 
