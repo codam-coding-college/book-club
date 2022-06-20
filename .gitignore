@@ -4,6 +4,9 @@ build/
 target/
 Cargo.lock
 
+# Other
+.vscode/
+
 # Prerequisites
 *.d
 
