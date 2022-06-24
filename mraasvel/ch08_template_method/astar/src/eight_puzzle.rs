@@ -10,9 +10,9 @@ pub struct Board {
 }
 
 impl Hash for Board {
-	fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-		self.squares.hash(state)
-	}
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.squares.hash(state)
+    }
 }
 
 impl Debug for Board {
@@ -33,11 +33,14 @@ impl Debug for Board {
 }
 
 impl Board {
-
-	pub fn new(squares: Vec<u8>, cost: usize) -> Board {
-		let score = Board::heuristic(&squares) + cost;
-		Board { squares, cost, score }
-	}
+    pub fn new(squares: Vec<u8>, cost: usize) -> Board {
+        let score = Board::heuristic(&squares) + cost;
+        Board {
+            squares,
+            cost,
+            score,
+        }
+    }
 
     pub fn random() -> Board {
         use rand::seq::SliceRandom;
@@ -60,64 +63,62 @@ impl Board {
         }
     }
 
-	
-	fn heuristic(squares: &[u8]) -> usize {
+    fn heuristic(squares: &[u8]) -> usize {
+        #[inline]
+        fn position_cost(index: usize, target: usize) -> usize {
+            (index % 3 + index / 3).abs_diff(target % 3 + index / 3)
+        }
 
-		#[inline]
-		fn position_cost(index: usize, target: usize) -> usize {
-			(index % 3 + index / 3).abs_diff(target % 3 + index / 3)
-		}
+        squares.into_iter().enumerate().fold(0, |acc, (index, x)| {
+            if *x == 0 {
+                acc
+            } else {
+                // x == target index
+                // diff(x + y, target_x + target_y) == total moves
+                acc + position_cost(index, *x as usize)
+            }
+        })
+    }
 
-		squares.into_iter().enumerate().fold(0, |acc, (index, x)| {
-			if *x == 0 {
-				acc
-			} else {
-				// x == target index
-				// diff(x + y, target_x + target_y) == total moves
-				acc + position_cost(index, *x as usize)
-			}
-		})
-	}
+    fn empty_square(&self) -> (usize, usize) {
+        for y in 0..3 {
+            for x in 0..3 {
+                if self.squares[y * 3 + x] == 0 {
+                    return (x, y);
+                }
+            }
+        }
+        panic!("invalid board state");
+    }
 
-	fn empty_square(&self) -> (usize, usize) {
-		for y in 0..3 {
-			for x in 0..3 {
-				if self.squares[y * 3 + x] == 0 {
-					return (x, y);
-				}
-			}
-		}
-		panic!("invalid board state");
-	}
-
-	fn make_move(&self, (x, y): (usize, usize), (x2, y2): (usize, usize)) -> Board {
-		let mut squares = self.squares.clone();
-		squares.swap(y * 3 + x, y2 * 3 + x2);
-		Board::new(squares, self.cost + 1)
-	}
+    fn make_move(&self, (x, y): (usize, usize), (x2, y2): (usize, usize)) -> Board {
+        let mut squares = self.squares.clone();
+        squares.swap(y * 3 + x, y2 * 3 + x2);
+        Board::new(squares, self.cost + 1)
+    }
 }
 
 impl AstarState for Board {
     fn expand(&self) -> Vec<Self> {
-		let (x, y) = self.empty_square();
-		let mut result = Vec::new();
-		if y > 0 {
-			// up
-			result.push(self.make_move((x, y), (x, y - 1)));
-		}
-		if y < 2 {
-			// down
-			result.push(self.make_move((x, y), (x, y + 1)));
-		}
-		if x > 0 {
-			// left
-			result.push(self.make_move((x, y), (x - 1, y)));
-		}
-		if x < 2 {
-			// right
-			result.push(self.make_move((x, y), (x + 1, y)));
-		}
-		result
+        let (x, y) = self.empty_square();
+        let mut result = Vec::new();
+        if y > 0 {
+            // up
+            result.push(self.make_move((x, y), (x, y - 1)));
+        }
+        if y < 2 {
+            // down
+            result.push(self.make_move((x, y), (x, y + 1)));
+        }
+        if x > 0 {
+            // left
+            result.push(self.make_move((x, y), (x - 1, y)));
+        }
+        if x < 2 {
+            // right
+            result.push(self.make_move((x, y), (x + 1, y)));
+        }
+        result
     }
 }
 
