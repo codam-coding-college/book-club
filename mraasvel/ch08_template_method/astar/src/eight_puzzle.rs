@@ -2,11 +2,17 @@ use std::{fmt::Debug, hash::Hash};
 
 use crate::template::AstarState;
 
-#[derive(Clone)]
 pub struct Board {
     squares: Vec<u8>, // 3x3: 0 represents the empty square
+    history: Vec<Board>,
     cost: usize,      // number of moves: g(n)
     score: usize,     // heuristic value: f(n) = h(n) + g(n)
+}
+
+impl Clone for Board {
+    fn clone(&self) -> Self {
+        Board { squares: self.squares.clone(), history: Vec::new(), cost: self.cost, score: self.score }
+    }
 }
 
 impl Hash for Board {
@@ -39,6 +45,7 @@ impl Board {
             squares,
             cost,
             score,
+            history: Vec::new(),
         }
     }
 
@@ -48,25 +55,26 @@ impl Board {
         let mut squares: Vec<u8> = (0..9).collect();
         squares.shuffle(&mut thread_rng());
         Board {
-            squares: squares.try_into().expect("wrong size squares"),
+            squares,
             cost: 0,
             score: 0,
+            history: Vec::new(),
         }
     }
 
     pub fn goal() -> Board {
-        let squares: Vec<u8> = (0..9).collect();
         Board {
-            squares: squares.try_into().expect("wrong size squares"),
+            squares: (0..9).collect(),
             cost: 0,
             score: 0,
+            history: Vec::new(),
         }
     }
 
     fn heuristic(squares: &[u8]) -> usize {
         #[inline]
         fn position_cost(index: usize, target: usize) -> usize {
-            (index % 3 + index / 3).abs_diff(target % 3 + index / 3)
+            ((index % 3) + index / 3).abs_diff((target % 3) + target / 3)
         }
 
         squares.into_iter().enumerate().fold(0, |acc, (index, x)| {
@@ -94,7 +102,17 @@ impl Board {
     fn make_move(&self, (x, y): (usize, usize), (x2, y2): (usize, usize)) -> Board {
         let mut squares = self.squares.clone();
         squares.swap(y * 3 + x, y2 * 3 + x2);
-        Board::new(squares, self.cost + 1)
+        let mut next = Board::new(squares, self.cost + 1);
+        next.history = self.history.clone();
+        next.history.push(self.clone());
+        next
+    }
+
+    pub fn print_history(&self) {
+        for x in self.history.iter() {
+            println!("{:?}", x);
+        }
+        println!("{:?}", self);
     }
 }
 
