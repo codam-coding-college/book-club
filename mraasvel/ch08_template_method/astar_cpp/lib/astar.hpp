@@ -13,6 +13,7 @@ public:
 public:
 
 	struct ScoredState {
+		ScoredState(ScoredState&& ss): state(std::move(ss.state)), score(ss.score), depth(ss.depth) {}
 		ScoredState(State&& s, size_t score, size_t depth): state(s), score(score), depth(depth) {}
 		State state;
 		size_t score;
