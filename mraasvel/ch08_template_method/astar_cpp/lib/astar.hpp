@@ -4,7 +4,9 @@
 #include <exception>
 #include <limits>
 
-template <typename S>
+// todo: implement example
+
+template <typename S, typename Compare = std::less<size_t>>
 class Astar {
 public:
 
@@ -24,7 +26,7 @@ private:
 
 	struct ScoredStateCompare {
 		bool operator()(const ScoredState& a, const ScoredState& b) {
-			return a.score < b.score;
+			return Compare()(a.score, b.score);
 		}
 	};
 
@@ -52,7 +54,7 @@ public:
 				if (can_add(state)) {
 					size_t score = heuristic(state);
 					ScoredState next { state, score, depth + 1 };
-					if (next.score < best.score) {
+					if (Compare()(best.score, next.score)) {
 						best = next;
 					}
 					pq.emplace(next);
