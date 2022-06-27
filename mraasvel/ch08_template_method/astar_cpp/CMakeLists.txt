@@ -17,5 +17,4 @@ endif()
 
 add_subdirectory(heap)
 add_subdirectory(lib)
-add_subdirectory(test)
 add_subdirectory(eight_puzzle)

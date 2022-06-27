@@ -1,6 +1,6 @@
 #pragma once
 
-#include <queue>
+#include "heap.hpp"
 #include <exception>
 #include <limits>
 #include <cstdio>
@@ -81,7 +81,7 @@ private:
 	}
 
 private:
-	std::priority_queue<ScoredState, std::vector<ScoredState>, ScoredStateCompare> pq;
+	DSA::Heap<ScoredState, std::vector<ScoredState>, ScoredStateCompare> pq;
 	State goal;
 	ScoredState best;
 	size_t max_depth;
