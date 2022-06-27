@@ -3,10 +3,10 @@
 #include <queue>
 #include <exception>
 #include <limits>
+#include <cstdio>
+#include <iostream>
 
-// todo: implement example
-
-template <typename S, typename Compare = std::less<size_t>>
+template <typename S, typename Compare = std::greater<size_t>>
 class Astar {
 public:
 
@@ -15,8 +15,13 @@ public:
 public:
 
 	struct ScoredState {
+		ScoredState() = default;
+		ScoredState& operator=(const ScoredState&) = default;
+
+		ScoredState(const ScoredState&) = default;
 		ScoredState(ScoredState&& ss): state(std::move(ss.state)), score(ss.score), depth(ss.depth) {}
 		ScoredState(State&& s, size_t score, size_t depth): state(s), score(score), depth(depth) {}
+
 		State state;
 		size_t score;
 		size_t depth;
@@ -32,34 +37,37 @@ private:
 
 public:
 
-	Astar(State initial, State goal): goal(std::move(goal)) {
-		best.score = std::numeric_limits<size_t>::max();
-		pq.emplace(std::move(initial), 0, 0);
-	}
+	Astar(State initial, State goal, size_t max_depth = std::numeric_limits<size_t>::max())
+	: goal(goal), best(std::move(initial), 0, 0), max_depth(max_depth) {}
 
-	ScoredState solve(State initial, State goal, size_t max_depth = std::numeric_limits<size_t>::max()) {
+	virtual ~Astar() {}
+
+	ScoredState solve() {
+		best.score = heuristic(best.state);
+		pq.emplace(best);
 		while (!pq.empty()) {
 			const ScoredState& top = pq.top();
 			if (top.state == goal) {
 				return top;
+			}
+			if (Compare()(best.score, top.score)) {
+				best = top;
 			}
 			if (top.depth == max_depth) {
 				pq.pop();
 				continue;
 			}
 			size_t depth = top.depth;
-			std::vector<State> states = expand(top);
+			std::vector<State> states = expand(top.state);
 			pq.pop();
-			for (State&& state: states) {
+			for (auto&& state: states) {
 				if (can_add(state)) {
 					size_t score = heuristic(state);
-					ScoredState next { state, score, depth + 1 };
-					if (Compare()(best.score, next.score)) {
-						best = next;
-					}
+					ScoredState next { std::move(state), score, depth + 1 };
 					pq.emplace(next);
 				}
 			}
+			std::cout << pq.size() << std::endl;
 		}
 		return best;
 	}
@@ -73,7 +81,8 @@ private:
 	}
 
 private:
-	std::priority_queue<ScoredState, ScoredStateCompare> pq;
+	std::priority_queue<ScoredState, std::vector<ScoredState>, ScoredStateCompare> pq;
 	State goal;
 	ScoredState best;
+	size_t max_depth;
 };
