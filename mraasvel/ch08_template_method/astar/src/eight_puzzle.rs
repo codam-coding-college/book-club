@@ -74,7 +74,9 @@ impl Board {
     fn heuristic(squares: &[u8]) -> usize {
         #[inline]
         fn position_cost(index: usize, target: usize) -> usize {
-            ((index % 3) + index / 3).abs_diff((target % 3) + target / 3)
+            let x = (index % 3).abs_diff(target % 3);
+            let y = (index / 3).abs_diff(target / 3);
+            x + y
         }
 
         squares.into_iter().enumerate().fold(0, |acc, (index, x)| {
