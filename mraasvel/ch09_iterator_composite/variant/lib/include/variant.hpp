@@ -54,6 +54,11 @@ class Json {
 		Json(ObjectType&& object);
 		~Json();
 
+		Json& operator=(const Json&) = delete;
+		Json& operator=(Json&&) = delete;
+		Json(Json&&) = delete;
+		Json(const Json&) = delete;
+
 		JsonType get_type() const;
 		int get_num() const;
 		bool get_bool() const;

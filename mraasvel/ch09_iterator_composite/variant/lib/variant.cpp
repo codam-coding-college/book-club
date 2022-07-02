@@ -8,9 +8,7 @@ Json::JsonData::JsonData(bool b): b(b) {}
 Json::JsonData::JsonData(const std::string& str): str(str) {}
 Json::JsonData::JsonData(std::vector<Json*>&& array): array(std::move(array)) {}
 Json::JsonData::JsonData(std::unordered_map<std::string, Json*>&& object): object(std::move(object)) {}
-Json::JsonData::~JsonData() {
-	std::cout << "Json Data destructor " << this << std::endl;
-}
+Json::JsonData::~JsonData() {}
 
 Json::Json(): type(Null) {}
 Json::Json(int n): data(n), type(Number) {}
@@ -20,7 +18,6 @@ Json::Json(ArrayType&& array): data(std::move(array)), type(Array) {}
 Json::Json(ObjectType&& object): data(std::move(object)), type(Object) {}
 
 Json::~Json() {
-	std::cout << "Json destructor: " << this << std::endl;
 	switch (type) {
 		case Number:
 			break;
@@ -45,19 +42,15 @@ void Json::destroy_bool() {}
 void Json::destroy_string() {}
 
 void Json::destroy_array() {
-	std::cout << "destroy array " << this << std::endl;
 	auto array = get_array();
 	for (Json* x : array) {
-		std::cout << "delete array element " << x << std::endl;
 		delete x;
 	}
 }
 
 void Json::destroy_object() {
-	std::cout << "destroy object " << this << std::endl;
 	auto object = get_object();
 	for (auto x: object) {
-		std::cout << "delete map entry " << x.first << " -> " << x.second << std::endl;
 		delete x.second;
 	}
 }
