@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <cassert>
 #include <iostream> // remove
 
 namespace variant {
@@ -20,42 +21,46 @@ class Option {
 		Option()
 		: state(None) {}
 
-		Option(const T& value)
+		template <typename U = T>
+		Option(const U& value)
 		: state(Some) {
 			::new(&store) T { value };
 		}
 
-		Option(T&& value)
+		template <typename U = T>
+		Option(U&& value)
 		: state(Some) {
 			::new(&store) T { std::move(value) };
 		}
 
 		~Option() {
 			if (is_some()) {
-				std::cout << "destroying value" << std::endl;
+				std::cout << "destroying option value" << std::endl;
 				reinterpret_cast<T*>(&store)->~T();
 			}
 		}
 
 		T& value() {
+			assert(is_some());
 			return *reinterpret_cast<T*>(&store);
 		}
 
 		const T& value() const {
-			return *reinterpret_cast<T*>(&store);
+			assert(is_some());
+			return *reinterpret_cast<const T*>(&store);
 		}
 
-		bool is_some() {
+		bool is_some() const {
 			return state == Some;
 		}
 
-		bool is_none() {
+		bool is_none() const {
 			return state == None;
 		}
 
 	private:
 		Type state;
-		std::aligned_storage<sizeof(T), alignof(T)> store;
+		typename std::aligned_storage<sizeof(T), alignof(T)>::type store;
 };
 
 }
