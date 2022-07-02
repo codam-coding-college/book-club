@@ -11,7 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if (MSVC)
 	add_compile_options(/W3 /WX)
 else()
-	add_compile_options(-O3 -Wall -Wextra -Wpedantic -Werror)
+	add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 endif()
 
 add_subdirectory(lib)

@@ -38,17 +38,15 @@ class Permutations {
 			std::iter_swap(table.begin() + pos, it);
 		}
 
-		// 0 1 3 2 -> return index of 1
+		// 0 1 3 2 -> return index of 1 because [3, 2] is already the last permutation
 		// while table[i] >= table[i + 1]
 		int find_start() {
-			int i = table.size() - 2;
-			while (i >= 0) {
+			for (int i = table.size() - 2; i >= 0; i--) {
 				if (Compare()(table[i], table[i + 1])) {
 					return i;
 				}
-				i--;
 			}
-			return i;
+			return -1;
 		}
 
 	private:

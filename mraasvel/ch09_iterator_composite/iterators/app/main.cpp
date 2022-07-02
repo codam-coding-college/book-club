@@ -16,7 +16,6 @@ using MapType = Map<FilterType, int>;
 using TakeType = Take<MapType>;
 
 int main() {
-	
 	TakeType take { // yields [4, 8, 12, 16, 20]
 		5,
 		MapType { // yields [ 4, 8, 12, 16, ... ]
@@ -36,6 +35,5 @@ int main() {
 	int expected = 4 + 8 + 12 + 16 + 20;
 	std::cout << "Result: " << result << std::endl;
 	std::cout << "Expected: " << expected << std::endl;
-
 	return 0;
 }
