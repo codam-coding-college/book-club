@@ -84,4 +84,71 @@ const Json::ObjectType& Json::get_object() const {
 	return data.value().object;
 }
 
+void Json::print() const {
+	std::cout << "Json: ";
+	print_depth(0);
+	std::cout << std::endl;
+}
+
+static void print_tabs(int depth) {
+	while (depth-- > 0) {
+		std::cout << '\t';
+	}
+}
+
+void Json::print_array(int depth) const {
+	const auto& array = get_array();
+	std::cout << "[ ";
+	for (int i = 0; i < (int)array.size(); i++) {
+		array[i]->print_depth(depth + 1);
+		if (i < (int)array.size() - 1) {
+			std::cout << ", ";
+		}
+	}
+	std::cout << " ]";
+}
+
+void Json::print_object(int depth) const {
+	const auto& object = get_object();
+	std::cout << '{';
+	if (object.size() > 0) {
+		std::cout << std::endl;
+	}
+	for (const auto& it: object) {
+		print_tabs(depth + 1);
+		std::cout << '"' << it.first << "\": ";
+		it.second->print_depth(depth + 1);
+		std::cout << std::endl;
+	}
+	if (object.size() > 0) {
+		print_tabs(depth);
+	}
+	std::cout << '}' << std::endl;
+}
+
+void Json::print_depth(int depth) const {
+	switch (get_type()) {
+		case Number:
+			std::cout << get_num();
+			break;
+		case Boolean:
+			std::cout << std::boolalpha << get_bool();
+			break;
+		case String:
+			std::cout << '"' << get_string() << '"';
+			break;
+		case Array:
+			print_tabs(depth);
+			print_array(depth);
+			break;
+		case Object:
+			print_tabs(depth);
+			print_object(depth);
+			break;
+		case Null:
+			std::cout << "null";
+			break;
+	}
+}
+
 }

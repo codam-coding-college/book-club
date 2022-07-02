@@ -70,8 +70,13 @@ class Json {
 		const std::string& get_string() const;
 		const ArrayType& get_array() const;
 		const ObjectType& get_object() const;
-	
+
+		void print() const;
+
 	private:
+		void print_depth(int depth) const;
+		void print_array(int depth) const;
+		void print_object(int depth) const;
 		void destroy_int();
 		void destroy_bool();
 		void destroy_string();

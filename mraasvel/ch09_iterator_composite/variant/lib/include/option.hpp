@@ -35,7 +35,6 @@ class Option {
 
 		~Option() {
 			if (is_some()) {
-				std::cout << "destroying option value" << std::endl;
 				reinterpret_cast<T*>(&store)->~T();
 			}
 		}
