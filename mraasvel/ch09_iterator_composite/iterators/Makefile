@@ -1,6 +1,9 @@
 BUILD_DIR = target
 
-all: test
+all: run
+
+run: build
+	$(BUILD_DIR)/app/a.out
 
 test: build
 	$(BUILD_DIR)/test/test.out
@@ -11,4 +14,4 @@ build: $(BUILD_DIR)
 $(BUILD_DIR):
 	cmake -S . -B $(BUILD_DIR)
 
-.PHONY: all test build
+.PHONY: all run test build

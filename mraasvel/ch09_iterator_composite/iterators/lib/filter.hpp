@@ -11,7 +11,7 @@ class Filter {
 		using FunctionType = std::function<bool(const Item&)>;
 
 		Filter(Iterator it, FunctionType filter)
-		: it(it), filter(filter) {
+		: it(it), filter(filter), finished(false) {
 			load_next();
 		}
 

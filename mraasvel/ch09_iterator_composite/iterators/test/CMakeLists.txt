@@ -9,6 +9,10 @@ add_executable(${EXEC}
 	flatten.cpp
 	chain.cpp
 	take.cpp
+	sum.cpp
+	collect.cpp
+	fold.cpp
+	permutation.cpp
 )
 
 target_link_libraries(${EXEC} PUBLIC iterator)
