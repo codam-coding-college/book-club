@@ -29,8 +29,8 @@ class Json {
 			JsonData(int n);
 			JsonData(bool b);
 			JsonData(const std::string& s);
-			JsonData(const std::vector<Json*>& array);
-			JsonData(const std::unordered_map<std::string, Json*>& object);
+			JsonData(std::vector<std::unique_ptr<Json>>&& array);
+			JsonData(std::unordered_map<std::string, std::unique_ptr<Json>>&& object);
 			~JsonData();
 
 			JsonData& operator=(const JsonData&) = delete;
@@ -41,12 +41,12 @@ class Json {
 			int n;
 			bool b;
 			std::string str;
-			std::vector<Json*> array;
-			std::unordered_map<std::string, Json*> object;
+			std::vector<std::unique_ptr<Json>> array;
+			std::unordered_map<std::string, std::unique_ptr<Json>> object;
 		};
 
 	public:
-		using PointerType = Json*;
+		using PointerType = std::unique_ptr<Json>;
 		using ArrayType = std::vector<PointerType>;
 		using ObjectType = std::unordered_map<std::string, PointerType>;
 
@@ -55,8 +55,8 @@ class Json {
 		Json(int n);
 		Json(bool b);
 		Json(const std::string& s);
-		Json(const ArrayType& array);
-		Json(const ObjectType& object);
+		Json(ArrayType&& array);
+		Json(ObjectType&& object);
 		~Json();
 
 		Json& operator=(const Json&) = delete;

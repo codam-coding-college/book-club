@@ -6,16 +6,18 @@ namespace variant {
 Json::JsonData::JsonData(int n): n(n) {}
 Json::JsonData::JsonData(bool b): b(b) {}
 Json::JsonData::JsonData(const std::string& str): str(str) {}
-Json::JsonData::JsonData(const std::vector<Json*>& array): array(std::move(array)) {}
-Json::JsonData::JsonData(const std::unordered_map<std::string, Json*>& object): object(std::move(object)) {}
+Json::JsonData::JsonData(std::vector<std::unique_ptr<Json>>&& array)
+: array(std::move(array)) {}
+Json::JsonData::JsonData(std::unordered_map<std::string, std::unique_ptr<Json>>&& object)
+: object(std::move(object)) {}
 Json::JsonData::~JsonData() {}
 
 Json::Json(): type(Null) {}
 Json::Json(int n): data(n), type(Number) {}
 Json::Json(bool b): data(b), type(Boolean) {}
 Json::Json(const std::string& s): data(s), type(String) {}
-Json::Json(const ArrayType& array): data(std::move(array)), type(Array) {}
-Json::Json(const ObjectType& object): data(std::move(object)), type(Object) {}
+Json::Json(ArrayType&& array): data(std::move(array)), type(Array) {}
+Json::Json(ObjectType&& object): data(std::move(object)), type(Object) {}
 
 Json::~Json() {
 	switch (type) {
@@ -45,20 +47,11 @@ void Json::destroy_string() {
 
 void Json::destroy_array() {
 	JsonData& json = data.value();
-	for (Json* ptr: json.array) {
-		delete ptr;
-	}
 	json.array.~vector();
 }
 
 void Json::destroy_object() {
 	JsonData& json = data.value();
-	ObjectType::iterator it = json.object.begin();
-	while (it != json.object.end()) {
-		delete it->second;
-		it->second = nullptr;
-		it++;
-	}
 	json.object.~unordered_map();
 }
 

@@ -28,9 +28,10 @@ Option<Printer> f(int n) {
 
 int main() {
 	{
-		Json { Json::ObjectType {
-			std::make_pair("key", new Json { Json::ArrayType { new Json { false } } }),
-		} };
+		Json::ArrayType array {};
+		array.emplace_back(std::make_unique<Json>(false));
+		Json::ObjectType object {};
+		object["key"] = std::make_unique<Json>(std::move(array));
 	}
 	return 0;
 }
