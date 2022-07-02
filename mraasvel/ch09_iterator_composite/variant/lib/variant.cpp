@@ -1,5 +1,6 @@
 #include "variant.hpp"
 #include <cassert>
+#include <iostream>
 
 namespace variant {
 

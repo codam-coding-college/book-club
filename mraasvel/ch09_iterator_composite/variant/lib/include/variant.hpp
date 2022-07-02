@@ -8,10 +8,8 @@
 
 namespace variant {
 
-// gross
-
 /*
-std::variant is a better solution obviously
+std::variant is probably a better solution obviously
 */
 class Json {
 	public:
