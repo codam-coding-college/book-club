@@ -39,3 +39,6 @@ Cargo.lock
 *.exe
 *.out
 *.app
+
+# Python files
+__pycache__/
