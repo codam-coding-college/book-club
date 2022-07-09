@@ -4,7 +4,7 @@
 #include <cassert>
 #include <utility>
 
-namespace variant {
+namespace json {
 
 /*
 Optional value

@@ -1,7 +1,7 @@
-set(LIB variant)
+set(LIB json)
 
 add_library(${LIB} STATIC
-	variant.cpp
+	json.cpp
 )
 
 target_include_directories(${LIB} PUBLIC ./include)

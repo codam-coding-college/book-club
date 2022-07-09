@@ -1,8 +1,8 @@
-#include "variant.hpp"
+#include "json.hpp"
 #include <cassert>
 #include <iostream>
 
-namespace variant {
+namespace json {
 
 Json::JsonData::JsonData(int n): n(n) {}
 Json::JsonData::JsonData(bool b): b(b) {}

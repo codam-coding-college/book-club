@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace variant {
+namespace json {
 
 /*
 std::variant is probably a better solution obviously
