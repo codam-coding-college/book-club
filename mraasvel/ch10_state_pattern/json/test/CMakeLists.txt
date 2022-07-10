@@ -2,9 +2,12 @@ set(EXEC test.out)
 
 add_executable(${EXEC}
 	main.cpp
+	null.cpp
+	array.cpp
 )
 
 target_link_libraries(${EXEC} PUBLIC json_parse)
+target_link_libraries(${EXEC} PUBLIC json)
 
 # Catch2
 Include(FetchContent)

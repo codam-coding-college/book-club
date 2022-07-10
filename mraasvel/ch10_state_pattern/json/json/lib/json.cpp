@@ -1,8 +1,33 @@
 #include "json.hpp"
 #include <cassert>
 #include <iostream>
+#include <cstring>
 
 namespace json {
+
+std::ostream& operator<<(std::ostream& out, const Type& rhs) {
+	switch (rhs) {
+		case Type::Number:
+			out << "Number";
+			break;
+		case Type::Boolean:
+			out << "Boolean";
+			break;
+		case Type::String:
+			out << "String";
+			break;
+		case Type::Array:
+			out << "Array";
+			break;
+		case Type::Object:
+			out << "Object";
+			break;
+		case Type::Null:
+			out << "Null";
+			break;
+	}
+	return out;
+}
 
 Json::JsonData::JsonData(int n): n(n) {}
 Json::JsonData::JsonData(bool b): b(b) {}
@@ -12,6 +37,13 @@ Json::JsonData::JsonData(std::vector<std::unique_ptr<Json>>&& array)
 Json::JsonData::JsonData(std::unordered_map<std::string, std::unique_ptr<Json>>&& object)
 : object(std::move(object)) {}
 Json::JsonData::~JsonData() {}
+
+// not even sure if this will work, but it is never called
+// the only reason it exists is to be compatible with option move copy constructor
+Json::JsonData& Json::JsonData::operator=(JsonData&& rhs) {
+	std::memmove((void*)this, (void*)&rhs, sizeof(JsonData));
+	return *this;
+}
 
 Json::Json(): type(Type::Null) {}
 Json::Json(int n): data(n), type(Type::Number) {}
@@ -38,6 +70,29 @@ Json::~Json() {
 		case Type::Null:
 			break;
 	}
+}
+
+Json::Json(Json&& rhs): type(rhs.type) {
+	switch (type) {
+		case Type::Number:
+			data = std::move(rhs.get_num());
+			break;
+		case Type::Boolean:
+			data = std::move(rhs.get_bool());
+			break;
+		case Type::String:
+			data = std::move(rhs.get_string());
+			break;
+		case Type::Array:
+			data = std::move(rhs.data.value().array);
+			break;
+		case Type::Object:
+			data = std::move(rhs.data.value().object);
+			break;
+		case Type::Null:
+			break;
+	}
+	rhs.type = Type::Null;
 }
 
 void Json::destroy_int() {}
@@ -150,6 +205,59 @@ void Json::print_depth(int depth) const {
 			std::cout << "null";
 			break;
 	}
+}
+
+static bool equal_json_array(const Json::ArrayType& a, const Json::ArrayType& b) {
+	if (a.size() != b.size()) {
+		return false;
+	}
+	for (size_t i = 0; i < a.size(); i++) {
+		if (*a[i] != *b[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+static bool equal_json_object(const Json::ObjectType& a, const Json::ObjectType& b) {
+	if (a.size() != b.size()) {
+		return false;
+	}
+	for (const auto& pair: a) {
+		auto it = b.find(pair.first);
+		if (it == b.end()) {
+			return false;
+		}
+		if (pair.second != it->second) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool operator==(const Json& a, const Json& b) {
+	if (a.get_type() != b.get_type()) {
+		return false;
+	}
+	switch (a.get_type()) {
+		case Type::Number:
+			return a.get_num() == b.get_num();
+		case Type::Boolean:
+			return a.get_bool() == b.get_bool();
+		case Type::String:
+			return a.get_string() == b.get_string();
+		case Type::Array:
+			return equal_json_array(a.get_array(), b.get_array());
+		case Type::Object:
+			return equal_json_object(a.get_object(), b.get_object());
+		case Type::Null:
+			return true;
+	}
+	return false;
+}
+
+bool operator!=(const Json& a, const Json& b) {
+	return !(a == b);
 }
 
 }

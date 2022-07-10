@@ -3,6 +3,15 @@
 #include "json.hpp"
 #include <istream>
 
+/*
+Todo
+- Limitations:
+	- Maximum depth (stack size)
+	- Maximum string length
+	- Maximum number length
+	- Maximum total input size
+*/
+
 namespace json_parse {
 
 using Json = json::Json;

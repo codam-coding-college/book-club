@@ -33,10 +33,29 @@ class Option {
 			::new(&store) T { std::move(value) };
 		}
 
+		template <typename U = T>
+		Option(Option<U>&& other)
+		: state(other.state) {
+			if (other.is_some()) {
+				other.state = None;
+				::new(&store) T { std::move(*reinterpret_cast<U*>(&other.store)) };
+			}
+		}
+
 		~Option() {
 			if (is_some()) {
 				reinterpret_cast<T*>(&store)->~T();
 			}
+		}
+
+		template <typename U = T>
+		Option& operator=(U&& rhs) {
+			if (is_some()) {
+				*reinterpret_cast<T*>(&store) = std::move(rhs);
+			} else {
+				::new(&store) T { std::move(rhs) };
+			}
+			return *this;
 		}
 
 		T& value() {

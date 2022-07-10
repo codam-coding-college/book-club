@@ -17,6 +17,8 @@ enum class Type {
 	Null
 };
 
+std::ostream& operator<<(std::ostream& out, const Type& rhs);
+
 /*
 std::variant is probably a better solution obviously
 */
@@ -30,8 +32,8 @@ class Json {
 			JsonData(std::unordered_map<std::string, std::unique_ptr<Json>>&& object);
 			~JsonData();
 
+			JsonData& operator=(JsonData&&);
 			JsonData& operator=(const JsonData&) = delete;
-			JsonData& operator=(JsonData&&) = delete;
 			JsonData(JsonData&&) = delete;
 			JsonData(const JsonData&) = delete;
 
@@ -56,9 +58,12 @@ class Json {
 		Json(ObjectType&& object);
 		~Json();
 
-		Json& operator=(const Json&) = delete;
+		friend bool operator==(const Json& a, const Json& b);
+		friend bool operator!=(const Json& a, const Json& b);
+
+		Json(Json&&);
 		Json& operator=(Json&&) = delete;
-		Json(Json&&) = delete;
+		Json& operator=(const Json&) = delete;
 		Json(const Json&) = delete;
 
 		json::Type get_type() const;
