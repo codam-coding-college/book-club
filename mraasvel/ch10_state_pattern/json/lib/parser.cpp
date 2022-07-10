@@ -2,6 +2,7 @@
 #include "parser_null.hpp"
 #include "parser_array.hpp"
 #include "parser_string.hpp"
+#include "parser_object.hpp"
 #include <iostream>
 #include <exception>
 
@@ -46,7 +47,7 @@ static std::unique_ptr<Parser> make_parser(json::Type type) {
 		case json::Type::Number:
 			throw ParseException { "not implemented" };
 		case json::Type::Object:
-			throw ParseException { "not implemented" };
+			return std::unique_ptr<Parser> { new ParserObject };
 		case json::Type::String:
 			return std::unique_ptr<Parser> { new ParserString };
 	}

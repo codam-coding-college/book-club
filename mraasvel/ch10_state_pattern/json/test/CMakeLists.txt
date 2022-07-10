@@ -5,6 +5,7 @@ add_executable(${EXEC}
 	null.cpp
 	array.cpp
 	"string.cpp"
+	object.cpp
 )
 
 target_link_libraries(${EXEC} PUBLIC json_parse)

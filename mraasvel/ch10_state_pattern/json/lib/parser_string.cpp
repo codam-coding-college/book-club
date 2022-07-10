@@ -6,10 +6,11 @@ namespace json_parse {
 
 // invariant: first character in stream is '"'
 Parser::ParseResult ParserString::parse(InputStream& is) {
-	is.ignore();
+	if (is.get() != '"') {
+		return ParseResult::Error;
+	}
 	for (char ch; is.get(ch);) {
 		if (ch == '"') {
-			std::cout << "Result:" << str << '\n';
 			return ParseResult::Done;
 		}
 		str.push_back(ch);
@@ -18,7 +19,9 @@ Parser::ParseResult ParserString::parse(InputStream& is) {
 }
 
 Json ParserString::finish() {
-	return Json { str };
+	auto json = Json { std::move(str) };
+	str.clear();
+	return json;
 }
 
 }

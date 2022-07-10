@@ -6,6 +6,7 @@ add_library(${LIB} STATIC
 	parser_null.cpp
 	parser_array.cpp
 	parser_string.cpp
+	parser_object.cpp
 )
 
 target_include_directories(${LIB} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/public)

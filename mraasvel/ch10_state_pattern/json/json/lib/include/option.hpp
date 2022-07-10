@@ -54,6 +54,7 @@ class Option {
 				*reinterpret_cast<T*>(&store) = std::move(rhs);
 			} else {
 				::new(&store) T { std::move(rhs) };
+				state = Some;
 			}
 			return *this;
 		}

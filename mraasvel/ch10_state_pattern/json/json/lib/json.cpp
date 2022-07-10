@@ -81,7 +81,7 @@ Json::Json(Json&& rhs): type(rhs.type) {
 			data = std::move(rhs.get_bool());
 			break;
 		case Type::String:
-			data = std::move(rhs.get_string());
+			data = std::move(rhs.data.value().str);
 			break;
 		case Type::Array:
 			data = std::move(rhs.data.value().array);
@@ -228,7 +228,7 @@ static bool equal_json_object(const Json::ObjectType& a, const Json::ObjectType&
 		if (it == b.end()) {
 			return false;
 		}
-		if (pair.second != it->second) {
+		if (*pair.second != *it->second) {
 			return false;
 		}
 	}
