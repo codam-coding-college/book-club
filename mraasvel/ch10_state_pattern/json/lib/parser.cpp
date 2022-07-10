@@ -1,6 +1,7 @@
 #include "parser.hpp"
 #include "parser_null.hpp"
 #include "parser_array.hpp"
+#include "parser_string.hpp"
 #include <iostream>
 #include <exception>
 
@@ -47,7 +48,7 @@ static std::unique_ptr<Parser> make_parser(json::Type type) {
 		case json::Type::Object:
 			throw ParseException { "not implemented" };
 		case json::Type::String:
-			throw ParseException { "not implemented" };
+			return std::unique_ptr<Parser> { new ParserString };
 	}
 	throw std::runtime_error("invalid json type");
 }
@@ -61,7 +62,6 @@ static std::unique_ptr<Parser> next_state(InputStream& is) {
 
 // This function throws an exception on error, preferably this should be a return instead since syntax errors are common
 // We use a stack system to handle the recursive data structures: arrays/objects
-// 
 Json ParseController::parse() {
 	assert(stack.size() == 0);
 	std::unique_ptr<Parser> parser = next_state(is);
