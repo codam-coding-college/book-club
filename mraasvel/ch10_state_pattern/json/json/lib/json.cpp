@@ -13,29 +13,29 @@ Json::JsonData::JsonData(std::unordered_map<std::string, std::unique_ptr<Json>>&
 : object(std::move(object)) {}
 Json::JsonData::~JsonData() {}
 
-Json::Json(): type(Null) {}
-Json::Json(int n): data(n), type(Number) {}
-Json::Json(bool b): data(b), type(Boolean) {}
-Json::Json(const std::string& s): data(s), type(String) {}
-Json::Json(ArrayType&& array): data(std::move(array)), type(Array) {}
-Json::Json(ObjectType&& object): data(std::move(object)), type(Object) {}
+Json::Json(): type(Type::Null) {}
+Json::Json(int n): data(n), type(Type::Number) {}
+Json::Json(bool b): data(b), type(Type::Boolean) {}
+Json::Json(const std::string& s): data(s), type(Type::String) {}
+Json::Json(ArrayType&& array): data(std::move(array)), type(Type::Array) {}
+Json::Json(ObjectType&& object): data(std::move(object)), type(Type::Object) {}
 
 Json::~Json() {
 	switch (type) {
-		case Number:
+		case Type::Number:
 			break;
-		case Boolean:
+		case Type::Boolean:
 			break;
-		case String:
+		case Type::String:
 			destroy_string();
 			break;
-		case Array:
+		case Type::Array:
 			destroy_array();
 			break;
-		case Object:
+		case Type::Object:
 			destroy_object();
 			break;
-		case Null:
+		case Type::Null:
 			break;
 	}
 }
@@ -56,32 +56,32 @@ void Json::destroy_object() {
 	json.object.~unordered_map();
 }
 
-Json::JsonType Json::get_type() const {
+json::Type Json::get_type() const {
 	return type;
 }
 
 int Json::get_num() const {
-	assert(type == Number);
+	assert(type == Type::Number);
 	return data.value().n;
 }
 
 bool Json::get_bool() const {
-	assert(type == Boolean);
+	assert(type == Type::Boolean);
 	return data.value().b;
 }
 
 const std::string& Json::get_string() const {
-	assert(type == String);
+	assert(type == Type::String);
 	return data.value().str;
 }
 
 const Json::ArrayType& Json::get_array() const {
-	assert(type == Array);
+	assert(type == Type::Array);
 	return data.value().array;
 }
 
 const Json::ObjectType& Json::get_object() const {
-	assert(type == Object);
+	assert(type == Type::Object);
 	return data.value().object;
 }
 
@@ -129,24 +129,24 @@ void Json::print_object(int depth) const {
 
 void Json::print_depth(int depth) const {
 	switch (get_type()) {
-		case Number:
+		case Type::Number:
 			std::cout << get_num();
 			break;
-		case Boolean:
+		case Type::Boolean:
 			std::cout << std::boolalpha << get_bool();
 			break;
-		case String:
+		case Type::String:
 			std::cout << '"' << get_string() << '"';
 			break;
-		case Array:
+		case Type::Array:
 			print_tabs(depth);
 			print_array(depth);
 			break;
-		case Object:
+		case Type::Object:
 			print_tabs(depth);
 			print_object(depth);
 			break;
-		case Null:
+		case Type::Null:
 			std::cout << "null";
 			break;
 	}

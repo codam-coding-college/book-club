@@ -8,20 +8,19 @@
 
 namespace json {
 
+enum class Type {
+	Number,
+	Boolean,
+	String,
+	Array,
+	Object,
+	Null
+};
+
 /*
 std::variant is probably a better solution obviously
 */
 class Json {
-	public:
-		enum JsonType {
-			Number,
-			Boolean,
-			String,
-			Array,
-			Object,
-			Null
-		};
-
 	private:
 		union JsonData {
 			JsonData(int n);
@@ -62,7 +61,7 @@ class Json {
 		Json(Json&&) = delete;
 		Json(const Json&) = delete;
 
-		JsonType get_type() const;
+		json::Type get_type() const;
 		int get_num() const;
 		bool get_bool() const;
 		const std::string& get_string() const;
@@ -83,7 +82,7 @@ class Json {
 
 	private:
 		Option<JsonData> data;
-		JsonType type;
+		Type type;
 };
 
 }
