@@ -7,13 +7,13 @@ release:
 	$(MAKE) run BUILD_DIR=target BUILD_TYPE=Release
 
 run: build
-	$(BUILD_DIR)/app/a.out
+	$(BUILD_DIR)/app/a.out $(ARGS)
 
 test: build
-	$(BUILD_DIR)/test/test.out
+	$(BUILD_DIR)/test/test.out $(ARGS)
 
 gdb: build
-	gdb $(BUILD_DIR)/app/a.out
+	gdb $(BUILD_DIR)/app/a.out $(ARGS)
 
 build: $(BUILD_DIR)
 	cmake --build $(BUILD_DIR)
