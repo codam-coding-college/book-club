@@ -3,6 +3,8 @@
 #include "parser_array.hpp"
 #include "parser_string.hpp"
 #include "parser_object.hpp"
+#include "parser_bool.hpp"
+#include "parser_number.hpp"
 #include <iostream>
 #include <exception>
 
@@ -26,7 +28,7 @@ static JsonType determine_state(int c) {
 		case 'n':
 			return JsonType::Null;
 		default:
-			if (isdigit(c)) {
+			if (c == '-' || isdigit(c)) {
 				return JsonType::Number;
 			} else {
 				throw ParseException{ "invalid first character" };
@@ -41,11 +43,11 @@ static std::unique_ptr<Parser> make_parser(json::Type type) {
 		case json::Type::Array:
 			return std::unique_ptr<Parser> { new ParserArray };
 		case json::Type::Boolean:
-			throw ParseException { "not implemented" };
+			return std::unique_ptr<Parser> { new ParserBool };
 		case json::Type::Null:
 			return std::unique_ptr<Parser> { new ParserNull };
 		case json::Type::Number:
-			throw ParseException { "not implemented" };
+			return std::unique_ptr<Parser> { new ParserNumber };
 		case json::Type::Object:
 			return std::unique_ptr<Parser> { new ParserObject };
 		case json::Type::String:

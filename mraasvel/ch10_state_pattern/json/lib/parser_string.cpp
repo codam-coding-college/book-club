@@ -4,7 +4,8 @@
 
 namespace json_parse {
 
-// invariant: first character in stream is '"'
+// no escape character support
+// no unicode support
 Parser::ParseResult ParserString::parse(InputStream& is) {
 	if (is.get() != '"') {
 		return ParseResult::Error;
