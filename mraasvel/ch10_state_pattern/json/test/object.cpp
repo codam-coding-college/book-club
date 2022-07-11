@@ -40,6 +40,30 @@ TEST_CASE("nested_object") {
 		"}"
 	};
 
+	Json::ObjectType object;
+	object["key"] = std::unique_ptr<Json> { new Json {} };
+	Json::ArrayType array;
+	Json::ArrayType array_two;
+	array_two.emplace_back(std::unique_ptr<Json> { new Json {} });
+	array_two.emplace_back(std::unique_ptr<Json> { new Json {} });
+	array_two.emplace_back(std::unique_ptr<Json> { new Json { std::string("key") } });
+
+	Json::ArrayType a;
+	a.emplace_back(std::unique_ptr<Json> { new Json {} });
+	Json::ObjectType b;
+	b["key"] = std::unique_ptr<Json> { new Json { std::string("value") } };
+	Json::ArrayType array_three;
+	array_three.emplace_back(std::unique_ptr<Json> { new Json { std::move(a) }});
+	array_three.emplace_back(std::unique_ptr<Json> { new Json { Json::ObjectType {} }});
+	array_three.emplace_back(std::unique_ptr<Json> { new Json { std::move(b) }});
+
+	Json::ObjectType top;
+	top["object"] = std::unique_ptr<Json> { new Json { std::move(object) } };
+	top["array"] = std::unique_ptr<Json> { new Json { std::move(array) } };
+	top["array_two"] = std::unique_ptr<Json> { new Json { std::move(array_two) } };
+	top["array_three"] = std::unique_ptr<Json> { new Json { std::move(array_three) } };
+
+	auto expected = Json { std::move(top) };
 	auto result = json_parse::parse(ss);
-	// result.print();
+	REQUIRE(result == expected);
 }

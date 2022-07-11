@@ -10,7 +10,7 @@ class ParserNumber: public Parser {
 		Json finish();
 
 	private:
-		int n;
+		double d;
 };
 
 }
