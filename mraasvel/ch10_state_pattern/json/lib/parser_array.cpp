@@ -25,9 +25,7 @@ Parser::ParseResult ParserArray::parse(InputStream& is) {
 }
 
 Json ParserArray::finish() {
-	auto json = Json { std::move(array) };
-	array.clear();
-	return json;
+	return Json { std::move(array) };
 }
 
 void ParserArray::process_item(Json&& json) {

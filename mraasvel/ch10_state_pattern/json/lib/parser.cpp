@@ -68,7 +68,7 @@ static std::unique_ptr<Parser> next_state(InputStream& is) {
 Json ParseController::parse() {
 	assert(stack.size() == 0);
 	std::unique_ptr<Parser> parser = next_state(is);
-	while (true) {
+	while (is.good()) {
 		skipws(is);
 		Parser::ParseResult result = parser->parse(is);
 		switch (result) {
@@ -90,8 +90,7 @@ Json ParseController::parse() {
 				break;
 		}
 	}
-
-	throw std::runtime_error("invalid parse result");
+	throw std::runtime_error("non-good stream state");
 }
 
 /* Exception */

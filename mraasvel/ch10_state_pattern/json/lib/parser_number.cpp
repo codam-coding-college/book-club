@@ -12,6 +12,9 @@ namespace json_parse {
 
 Parser::ParseResult ParserNumber::parse(InputStream& is) {
 	is >> d;
+	if (is.fail()) {
+		return ParseResult::Error;
+	}
 	return ParseResult::Done;
 }
 

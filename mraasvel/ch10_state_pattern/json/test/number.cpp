@@ -6,7 +6,7 @@ using json::Json;
 
 TEST_CASE("number") {
 	Json expected { -12345 };
-	std::stringstream ss { "-12345" };
+	std::stringstream ss { "-12345.0" };
 	Json result = json_parse::parse(ss);
 	REQUIRE(result == expected);
 }
@@ -20,6 +20,5 @@ TEST_CASE("number_array") {
 	Json expected { std::move(array) };
 	std::stringstream ss { "[-12345, 0.0, 1.0e+2, 1.234]" };
 	Json result = json_parse::parse(ss);
-	result.print();
 	REQUIRE(result == expected);
 }
