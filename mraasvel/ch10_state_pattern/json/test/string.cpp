@@ -12,3 +12,11 @@ TEST_CASE("string") {
 	Json expected { str };
 	REQUIRE(json == expected);
 }
+
+TEST_CASE("escape") {
+	Json expected { std::string {" [\n\t\"] "} };
+	std::stringstream ss { "\" [\\n\\t\\\"] \"" };
+	auto json = json_parse::parse(ss);
+	expected.print(true);
+	REQUIRE(json == expected);
+}

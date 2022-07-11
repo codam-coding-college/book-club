@@ -27,7 +27,7 @@ static JsonType determine_state(int c) {
 			if (c == '-' || isdigit(c)) {
 				return JsonType::Number;
 			} else {
-				throw ParseException{ "invalid first character" };
+				throw ParseException{ "invalid start of json" };
 			}
 	}
 }
@@ -55,7 +55,6 @@ static std::unique_ptr<Parser> make_parser(json::Type type) {
 static std::unique_ptr<Parser> next_state(InputStream& is) {
 	skipws(is);
 	json::Type state = determine_state(is.peek());
-	std::cout << "State: " << state << '\n';
 	return make_parser(state);
 }
 

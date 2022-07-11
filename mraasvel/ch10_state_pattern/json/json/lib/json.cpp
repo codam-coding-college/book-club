@@ -221,6 +221,43 @@ void Json::print_object(int depth, bool readable) const {
 	std::cout << '}';
 }
 
+static char get_escaped_char(char c) {
+	switch (c) {
+		case '"':
+		case '\\':
+		case '/':
+			return c;
+		case '\b':
+			return 'b';
+		case '\f':
+			return 'f';
+		case '\n':
+			return 'n';
+		case '\r':
+			return 'r';
+		case '\t':
+			return 't';
+	}
+	return -1;
+}
+
+void Json::print_string() const {
+	std::cout << '"';
+	const std::string& str = get_string();
+	for (char c: str) {
+		if (c == '"' || c == '\\' || c == '/' || !isprint(c)) {
+			std::cout << '\\';
+			char ch = get_escaped_char(c);
+			if (ch != -1) {
+				std::cout << ch;
+			}
+		} else {
+			std::cout << c;
+		}
+	}
+	std::cout << '"';
+}
+
 void Json::print_depth(int depth, bool readable) const {
 	switch (get_type()) {
 		case Type::Number:
@@ -230,7 +267,7 @@ void Json::print_depth(int depth, bool readable) const {
 			std::cout << std::boolalpha << get_bool();
 			break;
 		case Type::String:
-			std::cout << '"' << get_string() << '"';
+			print_string();
 			break;
 		case Type::Array:
 			print_array(depth, readable);

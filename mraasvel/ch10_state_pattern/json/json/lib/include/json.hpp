@@ -82,6 +82,7 @@ class Json {
 		void print_depth(int depth, bool readable) const;
 		void print_array(int depth, bool readable) const;
 		void print_object(int depth, bool readable) const;
+		void print_string() const;
 		void destroy_int();
 		void destroy_bool();
 		void destroy_string();
