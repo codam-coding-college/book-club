@@ -65,5 +65,17 @@ TEST_CASE("nested_object") {
 
 	auto expected = Json { std::move(top) };
 	auto result = json_parse::parse(ss);
+	result.print(true);
+	result.print(false);
 	REQUIRE(result == expected);
+}
+
+TEST_CASE("duplicate_key") {
+	std::stringstream ss { "{ \"key\": null, \"key\": null }"};
+	try {
+		auto json = json_parse::parse(ss);
+		REQUIRE(false);
+	} catch (std::exception& e) {
+		REQUIRE(true);
+	}
 }

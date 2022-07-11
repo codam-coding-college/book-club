@@ -28,6 +28,7 @@ class Json {
 			JsonData(double d);
 			JsonData(bool b);
 			JsonData(const std::string& s);
+			JsonData(std::string&& s);
 			JsonData(std::vector<std::unique_ptr<Json>>&& array);
 			JsonData(std::unordered_map<std::string, std::unique_ptr<Json>>&& object);
 			~JsonData();
@@ -55,6 +56,7 @@ class Json {
 		Json(double d);
 		explicit Json(bool b);
 		Json(const std::string& s);
+		Json(std::string&& s);
 		Json(ArrayType&& array);
 		Json(ObjectType&& object);
 		~Json();
@@ -74,12 +76,12 @@ class Json {
 		const ArrayType& get_array() const;
 		const ObjectType& get_object() const;
 
-		void print() const;
+		void print(bool readable) const;
 
 	private:
-		void print_depth(int depth) const;
-		void print_array(int depth) const;
-		void print_object(int depth) const;
+		void print_depth(int depth, bool readable) const;
+		void print_array(int depth, bool readable) const;
+		void print_object(int depth, bool readable) const;
 		void destroy_int();
 		void destroy_bool();
 		void destroy_string();

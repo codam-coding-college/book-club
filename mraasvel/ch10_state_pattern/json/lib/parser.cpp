@@ -10,10 +10,6 @@
 
 namespace json_parse {
 
-void skipws(InputStream& is) {
-	is >> std::ws;
-}
-
 static JsonType determine_state(int c) {
 	switch (c) {
 		case '{':

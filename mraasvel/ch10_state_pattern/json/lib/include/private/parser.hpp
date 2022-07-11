@@ -7,7 +7,9 @@
 
 namespace json_parse {
 
-void skipws(InputStream& is);
+inline void skipws(InputStream& is) {
+	is >> std::ws;
+}
 
 class Parser {
 	public:
