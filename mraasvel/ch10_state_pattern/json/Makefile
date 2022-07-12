@@ -1,10 +1,15 @@
-BUILD_DIR = debug
-BUILD_TYPE = Debug
+ifdef RELEASE
+	BUILD_DIR = target
+	BUILD_TYPE = Release
+else
+	BUILD_DIR = debug
+	BUILD_TYPE = Debug
+endif
 
 all: run
 
 release:
-	$(MAKE) run BUILD_DIR=target BUILD_TYPE=Release
+	$(MAKE) build RELEASE=1
 
 run: build
 	$(BUILD_DIR)/app/a.out $(ARGS)
