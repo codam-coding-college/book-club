@@ -1,0 +1,8 @@
+{
+	"Hello": "string",
+	"object": {
+		"string":"value",
+		"array":[1, "two", {"this is also an":"object"}]
+	},
+	"number": 294023
+}

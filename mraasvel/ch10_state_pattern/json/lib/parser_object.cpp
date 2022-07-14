@@ -12,7 +12,7 @@ Parser::ParseResult ParserObject::parse(InputStream& is) {
 			return ParseResult::Done;
 		case '{':
 			// check for empty array
-			is >> std::ws;
+			skipws(is);
 			if (is.peek() == '}') {
 				is.get();
 				return ParseResult::Done;
@@ -26,11 +26,11 @@ Parser::ParseResult ParserObject::parse(InputStream& is) {
 }
 
 Parser::ParseResult ParserObject::parse_name(InputStream& is) {
-	is >> std::ws;
+	skipws(is);
 	if (string_parser.parse(is) == ParseResult::Error) {
 		return ParseResult::Error;
 	}
-	is >> std::ws;
+	skipws(is);
 	if (is.get() != ':') {
 		return ParseResult::Error;
 	}
@@ -44,7 +44,10 @@ Json ParserObject::finish() {
 void ParserObject::process_item(Json&& json) {
 	auto name = string_parser.finish();
 	auto type = json.get_type();
-	object[name.get_string()] = std::unique_ptr<Json> { new Json { std::move(json) } };
+	auto result = object.insert(std::make_pair(name.get_string(), std::unique_ptr<Json> { new Json { std::move(json) } }));
+	if (result.second == false) {
+		throw ParseException { "duplicate object key "};
+	}
 }
 
 }

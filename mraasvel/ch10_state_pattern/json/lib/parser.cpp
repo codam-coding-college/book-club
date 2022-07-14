@@ -10,10 +10,6 @@
 
 namespace json_parse {
 
-void skipws(InputStream& is) {
-	is >> std::ws;
-}
-
 static JsonType determine_state(int c) {
 	switch (c) {
 		case '{':
@@ -31,7 +27,7 @@ static JsonType determine_state(int c) {
 			if (c == '-' || isdigit(c)) {
 				return JsonType::Number;
 			} else {
-				throw ParseException{ "invalid first character" };
+				throw ParseException{ "invalid start of json" };
 			}
 	}
 }
@@ -59,7 +55,6 @@ static std::unique_ptr<Parser> make_parser(json::Type type) {
 static std::unique_ptr<Parser> next_state(InputStream& is) {
 	skipws(is);
 	json::Type state = determine_state(is.peek());
-	std::cout << "State: " << state << '\n';
 	return make_parser(state);
 }
 
@@ -68,7 +63,7 @@ static std::unique_ptr<Parser> next_state(InputStream& is) {
 Json ParseController::parse() {
 	assert(stack.size() == 0);
 	std::unique_ptr<Parser> parser = next_state(is);
-	while (true) {
+	while (is.good()) {
 		skipws(is);
 		Parser::ParseResult result = parser->parse(is);
 		switch (result) {
@@ -90,8 +85,7 @@ Json ParseController::parse() {
 				break;
 		}
 	}
-
-	throw std::runtime_error("invalid parse result");
+	throw std::runtime_error("non-good stream state");
 }
 
 /* Exception */
