@@ -48,7 +48,7 @@ class JsonParser
 };
 
 /* ParserUtils */
-bool		isNumber(const std::string &s);
+bool		isNumber(const std::string &str);
 char		isToken(char c);
 std::string	getWord(std::fstream& stream);
 std::string	getString(std::fstream& stream);

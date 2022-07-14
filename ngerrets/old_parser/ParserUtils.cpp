@@ -1,8 +1,13 @@
 #include "Parser.h"
 
-bool	isNumber(const std::string &s)
+bool	isNumber(const std::string &str)
 {
-	return (!s.empty() && std::all_of(s.begin(), s.end(), ::isdigit));
+	for (const char& c : str)
+	{
+		if (!isdigit(c))
+			return (false);
+	}
+	return (true);
 }
 
 char	isToken(char c)
