@@ -1,6 +1,10 @@
 #ifndef STATE_PARSER_HPP
 #define STATE_PARSER_HPP
 
+#include <string>
+
+using namespace std;
+
 // An abstract class template that defines the state parsing algorithm
 // as a template method, complete with hooks and abstract methods to be
 // implemented by the subclasses.
