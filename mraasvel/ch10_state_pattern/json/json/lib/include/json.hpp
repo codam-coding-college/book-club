@@ -76,13 +76,13 @@ class Json {
 		const ArrayType& get_array() const;
 		const ObjectType& get_object() const;
 
-		void print(bool readable) const;
+		void print(std::ostream& out, bool readable) const;
 
 	private:
-		void print_depth(int depth, bool readable) const;
-		void print_array(int depth, bool readable) const;
-		void print_object(int depth, bool readable) const;
-		void print_string() const;
+		void print_depth(std::ostream& out, int depth, bool readable) const;
+		void print_array(std::ostream& out, int depth, bool readable) const;
+		void print_object(std::ostream& out, int depth, bool readable) const;
+		void print_string(std::ostream& out) const;
 		void destroy_int();
 		void destroy_bool();
 		void destroy_string();

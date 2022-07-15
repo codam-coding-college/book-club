@@ -144,81 +144,81 @@ const Json::ObjectType& Json::get_object() const {
 	return data.value().object;
 }
 
-void Json::print(bool readable) const {
-	print_depth(0, readable);
+void Json::print(std::ostream& out, bool readable) const {
+	print_depth(out, 0, readable);
 	if (readable) {
-		std::cout << std::endl;
+		out << std::endl;
 	}
 }
 
-static void print_tabs(int depth) {
+static void print_tabs(std::ostream& out, int depth) {
 	if (depth == 0) {
 		return;
 	}
-	std::cout << std::setw(depth * 4) << ' ';
+	out << std::setw(depth * 4) << ' ';
 }
 
-void Json::print_array(int depth, bool readable) const {
+void Json::print_array(std::ostream& out, int depth, bool readable) const {
 	const auto& array = get_array();
 	if (array.empty()) {
-		std::cout << "[]";
+		out << "[]";
 		return;
 	}
-	std::cout << "[";
+	out << "[";
 	if (readable) {
-		std::cout << '\n';
+		out << '\n';
 	}
 	for (int i = 0; i < (int)array.size(); i++) {
 		if (readable) {
-			print_tabs(depth + 1);
+			print_tabs(out, depth + 1);
 		}
-		array[i]->print_depth(depth + 1, readable);
+		array[i]->print_depth(out, depth + 1, readable);
 		if (i < (int)array.size() - 1) {
-			std::cout << ",";
+			out << ",";
 			if (readable) {
-				std::cout << '\n';
+				out << '\n';
 			}
 		}
 	}
 	if (readable) {
-		std::cout << '\n';
-		print_tabs(depth);
+		out << '\n';
+		print_tabs(out, depth);
 	}
-	std::cout << "]";
+	out << "]";
 }
 
-void Json::print_object(int depth, bool readable) const {
+void Json::print_object(std::ostream& out, int depth, bool readable) const {
 	const auto& object = get_object();
 	if (object.empty()) {
-		std::cout << "{}";
+		out << "{}";
 		return;
 	}
-	std::cout << "{";
+	out << "{";
 	if (readable) {
-		std::cout << '\n';
+		out << '\n';
 	}
 	int i = 0;
 	for (const auto& it: object) {
 		if (readable) {
-			print_tabs(depth + 1);
+			print_tabs(out, depth + 1);
 		}
-		std::cout << '"' << it.first << "\":";
+		out << '"' << it.first << "\":";
 		if (readable) {
-			std::cout << ' ';
+			out << ' ';
 		}
-		it.second->print_depth(depth + 1, readable);
+		it.second->print_depth(out, depth + 1, readable);
 		if (i++ < (int)object.size() - 1) {
-			std::cout << ',';
+			out << ',';
 			if (readable) {
-				std::cout << '\n';
+				out << '\n';
 			}
 		}
 	}
 	if (readable) {
-		std::cout << '\n';
-		print_tabs(depth);
+		out << '\n';
+		print_tabs(out, depth);
 	}
-	std::cout << '}';
+	out << '}';
 }
 
 static char get_escaped_char(char c) {
@@ -241,42 +241,42 @@ static char get_escaped_char(char c) {
 	return -1;
 }
 
-void Json::print_string() const {
-	std::cout << '"';
+void Json::print_string(std::ostream& out) const {
+	out << '"';
 	const std::string& str = get_string();
 	for (char c: str) {
 		if (c == '"' || c == '\\' || c == '/' || !isprint(c)) {
-			std::cout << '\\';
+			out << '\\';
 			char ch = get_escaped_char(c);
 			if (ch != -1) {
-				std::cout << ch;
+				out << ch;
 			}
 		} else {
-			std::cout << c;
+			out << c;
 		}
 	}
-	std::cout << '"';
+	out << '"';
 }
 
-void Json::print_depth(int depth, bool readable) const {
+void Json::print_depth(std::ostream& out, int depth, bool readable) const {
 	switch (get_type()) {
 		case Type::Number:
-			std::cout << get_num();
+			out << get_num();
 			break;
 		case Type::Boolean:
-			std::cout << std::boolalpha << get_bool();
+			out << std::boolalpha << get_bool();
 			break;
 		case Type::String:
-			print_string();
+			print_string(out);
 			break;
 		case Type::Array:
-			print_array(depth, readable);
+			print_array(out, depth, readable);
 			break;
 		case Type::Object:
-			print_object(depth, readable);
+			print_object(out, depth, readable);
 			break;
 		case Type::Null:
-			std::cout << "null";
+			out << "null";
 			break;
 	}
 }

@@ -65,8 +65,6 @@ TEST_CASE("nested_object") {
 
 	auto expected = Json { std::move(top) };
 	auto result = json_parse::parse(ss);
-	result.print(true);
-	result.print(false);
 	REQUIRE(result == expected);
 }
 
