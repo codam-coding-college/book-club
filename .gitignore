@@ -6,6 +6,7 @@ Cargo.lock
 
 # Other
 .vscode/
+DS_Store*
 
 # Prerequisites
 *.d
