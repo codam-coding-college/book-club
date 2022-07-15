@@ -6,7 +6,7 @@ else
 	BUILD_TYPE = Debug
 endif
 
-all: run
+all: build
 
 release:
 	$(MAKE) build RELEASE=1
