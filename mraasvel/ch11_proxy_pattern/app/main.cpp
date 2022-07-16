@@ -1,5 +1,5 @@
 #include "storage.hpp"
-#include "memory_proxy.hpp"
+#include "storage_proxy.hpp"
 #include "mrlog.hpp"
 #include <iostream>
 
@@ -79,7 +79,7 @@ static void read_commands(std::istream& input, Storage& storage) {
 }
 
 int main() {
-	MemoryStorageProxy storage { "127.0.0.1", 3000 };
+	StorageProxy storage { "127.0.0.1", 3000 };
 	read_commands(std::cin, storage);
 	return 0;
 }

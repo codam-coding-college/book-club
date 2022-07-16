@@ -110,8 +110,8 @@ int run_server(const std::string& addr, short port, Storage& storage) {
 	if (listener.init(addr, port) == net::NetResult::Error) {
 		return -1;
 	}
-	mrlog::info("accepting connections on {}:{}", addr, port);
 	while (true) {
+		mrlog::info("accepting connections on {}:{}", addr, port);
 		net::TcpStream connection = listener.accept();
 		mrlog::info("received connection, handling...");
 		handle_connection(std::move(connection), storage);

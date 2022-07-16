@@ -14,6 +14,8 @@ endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address")
+set(CMAKE_EXE_LINKER_FLAGS "-g -fsanitize=address")
 
 add_subdirectory(socket-stream)
 add_subdirectory(json)
