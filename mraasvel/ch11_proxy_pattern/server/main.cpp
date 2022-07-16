@@ -53,7 +53,7 @@ static bool is_type(const Json::ObjectType& object, const std::string& key, json
 	return !(it == object.end() || it->second->get_type() != type);
 }
 
-Json process_command(const Json& request) {
+Json process_command(const Json& request, Storage& storage) {
 	if (request.get_type() != json::Type::Object) {
 		throw std::runtime_error("bad request");
 	}
@@ -62,29 +62,45 @@ Json process_command(const Json& request) {
 		throw std::runtime_error("bad request");
 	}
 	const std::string& command = object.at("command")->get_string();
-	// const std::string& key = object.at("key")->get_string();
+	const std::string& key = object.at("key")->get_string();
 	if (command == "GET") {
-		return make_response(StatusCode::InternalServerError, {});
+		auto content = storage.read(key);
+		if (!content.has_value()) {
+			return make_response(StatusCode::NotFound, {});
+		}
+		return make_response(StatusCode::Ok, content);
 	} else if (command == "SET") {
-		return make_response(StatusCode::InternalServerError, {});
+		if (!is_type(object, "content", json::Type::String)) {
+			return make_response(StatusCode::BadRequest, {});
+		}
+		auto content = object.find("content")->second->get_string();
+		storage.write(key, std::vector<char> { content.begin(), content.end() });
+		return make_response(StatusCode::Ok, {});
 	} else if (command == "DELETE") {
-		return make_response(StatusCode::InternalServerError, {});
+		if (!storage.remove(key)) {
+			return make_response(StatusCode::NotFound, {});
+		}
+		return make_response(StatusCode::Ok, {});
 	} else {
 		return make_response(StatusCode::BadRequest, {});
 	}
 }
 
-int handle_connection(net::TcpStream connection, Storage&) {
-	try {
-		Json request = json_parse::parse(connection);
-		request.print(std::cout, true);
-		// 1. parse request
-		Json response = process_command(request);
-		response.print(connection, false);
-		connection.flush();
-	} catch (std::exception& e) {
-		send_response(connection, StatusCode::BadRequest, {});
-		return 1;
+int handle_connection(net::TcpStream connection, Storage& storage) {
+	while (connection.good()) {
+		mrlog::info("waiting for request on connection");
+		try {
+			Json request = json_parse::parse(connection);
+			std::cout << "Request ";
+			request.print(std::cout, true);
+			// 1. parse request
+			Json response = process_command(request, storage);
+			response.print(connection, false);
+			connection.flush();
+		} catch (std::exception& e) {
+			send_response(connection, StatusCode::BadRequest, {});
+			return 1;
+		}
 	}
 	return 0;
 }
