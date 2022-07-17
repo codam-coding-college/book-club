@@ -39,10 +39,9 @@ Response proxy(const Request& request, RPC_client<Request, Response>& client) {
 }
 
 void client(const std::string& host, uint16_t port) {
-	RPC_client<Request, Response> client(host, port);
-
 	while (true) {
-		Request request;
+		RPC_client<Request, Response> client(host, port);
+		Request						  request;
 		std::cout << "\nEnter number: " << std::ends;
 		std::cin >> request.number;
 
