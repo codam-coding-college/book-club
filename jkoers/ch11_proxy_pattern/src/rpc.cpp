@@ -15,7 +15,12 @@
 	exit(EXIT_FAILURE);
 }
 
-Socket::Socket() : fd(-1) {}
+Socket::Socket() {
+	this->fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->fd < 0)
+		exit_with_perror("socket failed");
+}
+
 Socket::Socket(int fd) : fd(fd) {}
 
 Socket::Socket(Socket&& other) : fd(other.fd) {
@@ -46,9 +51,6 @@ Socket::~Socket() {
 }
 
 Server_socket::Server_socket(uint16_t port) {
-	if ((this->fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-		exit_with_perror("socket failed");
-
 	const int on = 1;
 	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) < 0)
 		exit_with_perror("setsockopt() failed");
@@ -74,10 +76,6 @@ Socket Server_socket::accept() {
 // client
 
 Client_socket::Client_socket(const std::string& host, uint16_t port) {
-	this->fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->fd < 0)
-		exit_with_perror("socket failed");
-
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(port);
