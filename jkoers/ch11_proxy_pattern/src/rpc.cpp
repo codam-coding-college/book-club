@@ -37,6 +37,20 @@ Socket& Socket::operator=(Socket&& other) {
 	return *this;
 }
 
+void Socket::read(std::vector<uint8_t>& buffer, size_t size) {
+	buffer.reserve(size);
+	ssize_t n = ::read(this->fd, buffer.data(), buffer.size());
+	// if (n != (ssize_t)size) // TODO: buffering
+	// 	exit_with_perror("read failed");
+	buffer.resize((size_t)n);
+}
+
+void Socket::write(const std::vector<uint8_t>& buffer) {
+	ssize_t n = ::write(this->fd, buffer.data(), buffer.size());
+	if (n != (ssize_t)buffer.size()) // TODO: buffering
+		exit_with_perror("write failed");
+}
+
 void Socket::close() {
 	if (fd < 0)
 		return;
@@ -52,7 +66,7 @@ Socket::~Socket() {
 
 Server_socket::Server_socket(uint16_t port) {
 	const int on = 1;
-	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) < 0)
+	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on)) < 0)
 		exit_with_perror("setsockopt() failed");
 
 	struct sockaddr_in address;
