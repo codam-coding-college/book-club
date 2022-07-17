@@ -1,5 +1,18 @@
 #pragma once
 #include "rpc.hpp"
+#include <iostream>
+
+#define ASSERT(left, operator, right)                                                                                               \
+	{                                                                                                                               \
+		if (!((left) operator(right))) {                                                                                            \
+			std::cerr << "ASSERTION FAILED: " << #left << " " << #operator<< " " << #right << " function " << __func__ << ", file " \
+					  << "./" << __FILE__ << ":" << __LINE__ << "\n"                                                                \
+					  << #left << " = " <<(left)                                                                                    \
+					  << "\n"                                                                                                       \
+					  << #right << " = " << (right) << std::endl;                                                                   \
+			exit(EXIT_FAILURE);                                                                                                     \
+		}                                                                                                                           \
+	}
 
 struct Request : public Transfer_object {
 	Request(int number) : number(number) {}
@@ -13,7 +26,7 @@ struct Request : public Transfer_object {
 		return buffer;
 	}
 	void deserialize(const std::vector<uint8_t>& data) {
-		assert(data.size() == sizeof(number));
+		ASSERT(data.size(), ==, sizeof(number));
 		std::memcpy(&number, data.data(), sizeof(number));
 	}
 
@@ -33,7 +46,7 @@ struct Response {
 	}
 
 	void deserialize(const std::vector<uint8_t>& data) {
-		assert(data.size() == sizeof(number));
+		ASSERT(data.size(), ==, sizeof(number));
 		std::memcpy(&number, data.data(), sizeof(number));
 	}
 
