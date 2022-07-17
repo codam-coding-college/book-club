@@ -55,7 +55,7 @@ impl<W: Write> Generator<W> {
     }
 
     fn make_json(&mut self, depth: usize, with_key: bool) {
-		if self.values != self.last_value && self.values % (self.total / 10) == 0 {
+		if self.total / 10 != 0 && self.values != self.last_value && self.values % (self.total / 10) == 0 {
 			log::info!("{}%", 100.0 * ((self.values as f64) / (self.total as f64)));
 			self.last_value = self.values;
 		}
