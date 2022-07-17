@@ -7,6 +7,7 @@
 void print_error() {
 	std::cout << "Usage: server <port>" << std::endl;
 	std::cout << "Usage: client <IPV4 address> <port>" << std::endl;
+	std::cout << "Usage: test <IPV4 address> <port>" << std::endl;
 }
 
 // compute result
@@ -65,6 +66,13 @@ int main(int argc, const char* argv[]) {
 	}
 	else if (!strcmp(argv[1], "client") && argc == 4) {
 		client(argv[2], atoi(argv[3]));
+	}
+	else if (!strcmp(argv[1], "test") && argc == 4) {
+		while (true) {
+			RPC_client<Request, Response> client(argv[2], atoi(argv[3]));
+			client.call(Request(1));
+			std::cout << "received" << std::endl;
+		}
 	}
 	else {
 		print_error();
