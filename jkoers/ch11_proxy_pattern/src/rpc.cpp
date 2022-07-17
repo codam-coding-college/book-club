@@ -12,13 +12,12 @@
 	exit(EXIT_FAILURE);
 }
 
-Socket::Socket() {
-	this->fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->fd < 0)
-		exit_with_perror("socket failed");
-}
+Socket::Socket() : Socket(socket(AF_INET, SOCK_STREAM, 0)) {}
 
-Socket::Socket(int fd) : fd(fd) {}
+Socket::Socket(int fd) : fd(fd) {
+	if (this->fd < 0)
+		exit_with_perror("Invalid socket fd");
+}
 
 Socket::Socket(Socket&& other) : fd(other.fd) {
 	other.fd = -1;
@@ -35,10 +34,10 @@ Socket& Socket::operator=(Socket&& other) {
 }
 
 void Socket::read(std::vector<uint8_t>& buffer, size_t size) {
-	buffer.reserve(size);
-	ssize_t n = ::read(this->fd, buffer.data(), buffer.size());
-	// if (n != (ssize_t)size) // TODO: buffering
-	// 	exit_with_perror("read failed");
+	buffer.resize(size);
+	ssize_t n = ::read(this->fd, buffer.data(), size);
+	if (n <= 0) // TODO: buffering
+		exit_with_perror("read failed");
 	buffer.resize((size_t)n);
 }
 
