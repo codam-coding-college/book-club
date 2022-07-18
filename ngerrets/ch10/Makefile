@@ -1,8 +1,8 @@
 NAME := parser
 
-SRCS := main.cpp ../json/JsonNode.cpp Parser.cpp ParserStates.cpp ParserUtils.cpp
-HEADERS := ../json/JsonNode.h Parser.h
-INCLUDES := -I "../json/"
+SRCS := main.cpp json/JsonNode.cpp Parser.cpp ParserStates.cpp ParserUtils.cpp
+HEADERS := json/JsonNode.h Parser.h
+INCLUDES := -I "json/"
 
 CXXFLAGS := -Wall -Wextra -std=c++11
 
