@@ -1,5 +1,6 @@
 #pragma once
 #include "rpc.hpp"
+#include <cstring>
 #include <iostream>
 
 #define ASSERT(left, operator, right)                                                                                               \
