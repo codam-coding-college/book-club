@@ -1,6 +1,6 @@
 #include "Proxy.hpp"
-
 #include "Connection.hpp"
+#include "ReceiverProxy.hpp"
 
 void	client(void)
 {
@@ -16,12 +16,13 @@ void	client(void)
 
 void	server(void)
 {
-	Connection server(4242);
+	SubjectImpl*	actualSubject = new SubjectImpl("ActualSubject");
+	Connection*		receiverConnection = new Connection(4242);
 
-	Connection::TransferData data;
-	data = server.receive();
-
-	std::cout << data.buffer << std::endl;
+	ReceiverProxy	proxy(actualSubject, receiverConnection, "ReceiverProxy");
+	
+	while (true)
+		proxy.receive();
 }
 
 int	main(int argc, char** argv)

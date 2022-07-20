@@ -1,7 +1,7 @@
 NAME := proxy.out
 
-SRCS := src/main.cpp src/Subject.cpp src/Proxy.cpp src/Connection.cpp
-HEADERS := include/Proxy.hpp include/Subject.hpp include/Connection.hpp
+SRCS := src/main.cpp src/Subject.cpp src/Proxy.cpp src/Connection.cpp src/ReceiverProxy.cpp
+HEADERS := include/Proxy.hpp include/Subject.hpp include/Connection.hpp include/ReceiverProxy.hpp
 INCLUDES := -I "include/"
 
 CXXFLAGS := -Wall -Wextra -std=c++11
