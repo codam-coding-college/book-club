@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Subject.hpp"
-#include <iostream>
 
 class Proxy : public Subject
 {
