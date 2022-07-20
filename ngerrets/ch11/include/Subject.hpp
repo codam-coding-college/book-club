@@ -11,7 +11,7 @@ class Subject
 };
 
 //	The class that holds the subject implementation, can be substituted by a proxy
-class SubjectImpl : Subject
+class SubjectImpl : public Subject
 {
 
 	public:

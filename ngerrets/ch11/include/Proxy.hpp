@@ -3,16 +3,16 @@
 #include "Subject.hpp"
 #include <iostream>
 
-class Proxy : Subject
+class Proxy : public Subject
 {
 	public:
 		Proxy();
-		Proxy(SubjectImpl* subject);
+		Proxy(Subject* subject);
 		~Proxy();
 
 		bool	hasAccess() const;
 		void	print() const override;
 	
 	private:
-		SubjectImpl*	m_subject = NULL;
+		Subject*	m_subject = NULL;
 };

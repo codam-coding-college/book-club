@@ -2,5 +2,5 @@
 
 void	SubjectImpl::print() const
 {
-	std::cout << "Hi, I'm SubjectImpl!" << std::endl;
+	std::cout << "I am a Subject." << std::endl;
 }

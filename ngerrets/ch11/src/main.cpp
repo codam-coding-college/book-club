@@ -2,7 +2,11 @@
 
 int	main(void)
 {
-	Proxy	proxy;
+	//	A proxy of a proxy of SubjectImpl
+	Proxy	proxy
+	(
+		new Proxy( new SubjectImpl() )
+	);
 
 	proxy.print();
 

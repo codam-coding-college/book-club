@@ -1,4 +1,4 @@
-NAME := test
+NAME := test.out
 
 SRCS := src/main.cpp src/Subject.cpp src/Proxy.cpp
 HEADERS := include/Proxy.hpp include/Subject.hpp
