@@ -1,5 +1,5 @@
 use rand::prelude::*;
-use std::io::Write;
+use std::io::{Write, BufWriter};
 
 struct Generator<W: Write> {
     rng: ThreadRng,
@@ -105,6 +105,7 @@ impl<W: Write> Generator<W> {
 }
 
 pub fn generate<W: Write>(depth: usize, length: usize, writer: W) -> std::io::Result<()> {
+    let writer = BufWriter::new(writer);
     let mut generator = Generator::new(writer, length, depth);
     generator.generate(depth);
 	log::info!("100%");
