@@ -4,22 +4,25 @@
 
 namespace json_parse {
 
+ParserArray::ParserArray(): started(false) {}
+
 Parser::ParseResult ParserArray::parse(InputStream& is) {
-	char c = is.get();
-	switch (c) {
+	if (!started) {
+		assert(is.get() == '[');
+		skipws(is);
+	}
+	switch (is.peek()) {
 		case ']':
+			is.ignore();
 			return ParseResult::Done;
-		case '[':
-			// check for empty array
-			skipws(is);
-			if (is.peek() == ']') {
-				is.get();
-				return ParseResult::Done;
-			}
-			return ParseResult::NextState;
 		case ',':
+			is.ignore();
 			return ParseResult::NextState;
 		default:
+			if (!started) {
+				started = true;
+				return ParseResult::NextState;
+			}
 			return ParseResult::Error;
 	}
 }
