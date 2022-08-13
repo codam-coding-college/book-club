@@ -90,10 +90,10 @@ int main(int argc, char *argv[]) {
 				return 1;
 			}
 			auto json = json_parse::parse(ifs);
-			json.print(std::cout, options.readable);
+			// json.print(std::cout, options.readable);
 		} else {
 			auto json = json_parse::parse(std::cin);
-			json.print(std::cout, options.readable);
+			// json.print(std::cout, options.readable);
 		}
 	} catch (std::exception& e) {
 		std::cerr << e.what() << '\n';
