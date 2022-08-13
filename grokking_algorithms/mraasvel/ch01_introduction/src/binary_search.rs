@@ -8,31 +8,30 @@ pub fn binary_search<T, U>(table: &[T], target: &U) -> Option<usize>
 where
     T: PartialOrd<U>,
 {
-	binary_search_where(table, |x| {
-		if *x < *target {
-			Ordering::Less
-		} else if *x > *target {
-			Ordering::Greater
-		} else {
-			Ordering::Equal
-		}
-	})
+    binary_search_where(table, |x| {
+        if *x < *target {
+            Ordering::Less
+        } else if *x > *target {
+            Ordering::Greater
+        } else {
+            Ordering::Equal
+        }
+    })
 }
-
 
 pub fn binary_search_where<T, F>(table: &[T], check: F) -> Option<usize>
 where
-	F: Fn(&T) -> Ordering
+    F: Fn(&T) -> Ordering,
 {
     let mut start = 0;
     let mut end = table.len();
     while start < end {
         let index = (start + end) / 2;
-		match check(&table[index]) {
-			Ordering::Less => start = index + 1,
-			Ordering::Greater => end = index,
-			Ordering::Equal => return Some(index),
-		}
+        match check(&table[index]) {
+            Ordering::Less => start = index + 1,
+            Ordering::Greater => end = index,
+            Ordering::Equal => return Some(index),
+        }
     }
     None
 }
@@ -40,32 +39,32 @@ where
 /// Returns index of target in table if present, otherwise index of insertion position.
 pub fn binary_search_with_index<T, U>(table: &[T], target: &U) -> usize
 where
-	T: PartialOrd<U>
+    T: PartialOrd<U>,
 {
-	binary_search_where_with_index(table, |x| {
-		if *x < *target {
-			Ordering::Less
-		} else if *x > *target {
-			Ordering::Greater
-		} else {
-			Ordering::Equal
-		}
-	})
+    binary_search_where_with_index(table, |x| {
+        if *x < *target {
+            Ordering::Less
+        } else if *x > *target {
+            Ordering::Greater
+        } else {
+            Ordering::Equal
+        }
+    })
 }
 
 pub fn binary_search_where_with_index<T, F>(table: &[T], check: F) -> usize
 where
-	F: Fn(&T) -> Ordering
+    F: Fn(&T) -> Ordering,
 {
     let mut start = 0;
     let mut end = table.len();
     while start < end {
         let index = (start + end) / 2;
-		match check(&table[index]) {
-			Ordering::Less => start = index + 1,
-			Ordering::Greater => end = index,
-			Ordering::Equal => return index,
-		}
+        match check(&table[index]) {
+            Ordering::Less => start = index + 1,
+            Ordering::Greater => end = index,
+            Ordering::Equal => return index,
+        }
     }
     start
 }
