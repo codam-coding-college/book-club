@@ -9,12 +9,9 @@ where
     T: PartialOrd<U>,
 {
     binary_search_where(table, |x| {
-        if *x < *target {
-            Ordering::Less
-        } else if *x > *target {
-            Ordering::Greater
-        } else {
-            Ordering::Equal
+        match x.partial_cmp(target) {
+            Some(ord) => ord,
+            None => Ordering::Equal,
         }
     })
 }
@@ -42,12 +39,9 @@ where
     T: PartialOrd<U>,
 {
     binary_search_where_with_index(table, |x| {
-        if *x < *target {
-            Ordering::Less
-        } else if *x > *target {
-            Ordering::Greater
-        } else {
-            Ordering::Equal
+        match x.partial_cmp(target) {
+            Some(ord) => ord,
+            None => Ordering::Equal,
         }
     })
 }
@@ -91,5 +85,11 @@ mod tests {
         assert_eq!(binary_search_with_index(&array, &-5), 0);
         assert_eq!(binary_search_with_index(&array, &17), array.len());
         assert_eq!(binary_search_with_index(&array, &14), array.len() - 1);
+    }
+
+    #[test]
+    fn test_float() {
+        let array = [1.0, 3.0, 5.0, 7.0, 9.0, 15.0];
+        assert_eq!(binary_search_with_index(&array, &3.0), 1);
     }
 }
