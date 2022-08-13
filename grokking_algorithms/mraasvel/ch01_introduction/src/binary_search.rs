@@ -8,11 +8,9 @@ pub fn binary_search<T, U>(table: &[T], target: &U) -> Option<usize>
 where
     T: PartialOrd<U>,
 {
-    binary_search_where(table, |x| {
-        match x.partial_cmp(target) {
-            Some(ord) => ord,
-            None => Ordering::Equal,
-        }
+    binary_search_where(table, |x| match x.partial_cmp(target) {
+        Some(ord) => ord,
+        None => Ordering::Equal,
     })
 }
 
@@ -38,11 +36,9 @@ pub fn binary_search_with_index<T, U>(table: &[T], target: &U) -> usize
 where
     T: PartialOrd<U>,
 {
-    binary_search_where_with_index(table, |x| {
-        match x.partial_cmp(target) {
-            Some(ord) => ord,
-            None => Ordering::Equal,
-        }
+    binary_search_where_with_index(table, |x| match x.partial_cmp(target) {
+        Some(ord) => ord,
+        None => Ordering::Equal,
     })
 }
 
