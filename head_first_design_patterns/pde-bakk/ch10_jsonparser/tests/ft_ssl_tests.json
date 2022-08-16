@@ -1,0 +1,71 @@
+{
+  "MD5": [
+    {
+      "command": "echo \"42 is nice\" | ./ft_ssl md5",
+      "expected_stdout": "(stdin)= 35f1d6de0302e2086a4e472266efb3a9\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"42 is nice\" | ./ft_ssl md5 -p",
+      "expected_stdout": "(\"42 is nice\\n\")= 35f1d6de0302e2086a4e472266efb3a9\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"Pity the living.\" | ./ft_ssl md5 -q -r",
+      "expected_stdout": "e20c3b973f63482a778f3fd1869b7f25\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl md5 /tmp/file",
+      "expected_stdout": "MD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl md5 -r /tmp/file",
+      "expected_stdout": "53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl md5 -s \"pity those that aren't following baerista on spotify.\"",
+      "expected_stdout": "MD5 (\"pity those that aren't following baerista on spotify.\") = a3c990a1964705d9bf0e602f44572f5f\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"be sure to handle edge cases carefully\" | ./ft_ssl md5 -p /tmp/file",
+      "expected_stdout": "(\"be sure to handle edge cases carefully\\n\")= 3553dc7dc5963b583c056d1b9fa3349c\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"some of this will not make sense at first\" | ./ft_ssl md5 /tmp/file",
+      "expected_stdout": "MD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"but eventually you will understand\" | ./ft_ssl md5 -p -r /tmp/file",
+      "expected_stdout": "(\"but eventually you will understand\\n\")= dcdd84e0f635694d2a943fa8d3905281\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": " echo \"GL HF let's go\" | ./ft_ssl md5 -p -s \"foo\" /tmp/file",
+      "expected_stdout": "(\"GL HF let's go\\n\")= d1e3cc342b6da09480b27ec57ff243e2\nMD5 (\"foo\") = acbd18db4cc2f85cedef654fccc4a4d8\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": " echo \"one more thing\" | ./ft_ssl md5 -r -p -s \"foo\" /tmp/file -s \"bar\"",
+      "expected_stdout": "(\"one more thing\\n\")= a0bd1876c6f011dd50fae52827f445f5\nacbd18db4cc2f85cedef654fccc4a4d8 \"foo\"\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
+      "expected_stderr": "ft_ssl: md5: -s: No such file or directory\nft_ssl: md5: bar: No such file or directory\n"
+    },
+    {
+      "command": "echo \"just to be extra clear\" | ./ft_ssl md5 -r -q -p -s \"foo\" /tmp/file",
+      "expected_stdout": "just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a\n",
+      "expected_stderr": ""
+    }
+  ],
+  "SHA256": [
+    {
+      "command": "./ft_ssl sha256 -q /tmp/website",
+      "expected_stdout": "1ceb55d2845d9dd98557b50488db12bbf51aaca5aa9c1199eb795607a2457daf\n",
+      "expected_stderr": ""
+    }
+  ]
+}
