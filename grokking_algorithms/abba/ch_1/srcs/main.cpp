@@ -22,7 +22,7 @@ int binary_search(const std::vector<T>& list, const T& item) {
 }
 
 int main(int argc, char **argv) {
-	if (argc != 3) {
+	if (argc != 2) {
 		std::cerr << "usage: <program> <file> <value to check>\n";
 		return 1;
 	}
@@ -41,17 +41,14 @@ int main(int argc, char **argv) {
 		}
 	}
 	std::sort(buffer.begin(), buffer.end());
-	std::string find = argv[2];
-	std::cout << "test " << binary_search(buffer, find) << std::endl;
+	std::string find;
+	while (1) {
+		std::cout << "enter a name or type stop to end the program\n";
+		std::cout << "command: ";
+		std::cin >> find;
+		if (find == "stop") {
+			exit(0);
+		}
+		std::cout << "test " << binary_search(buffer, find) << std::endl;
+	}
 }
-
-
-//int main(void) {
-//	std::vector<int> list;
-//
-//	for (size_t i = 0; i < 100; ++i) {
-//		list.push_back((rand() % 200) + 1);
-//	}
-//	std::sort(list.begin(), list.end());
-//	std::cout << "test " << binary_search(list, 10);
-//}
