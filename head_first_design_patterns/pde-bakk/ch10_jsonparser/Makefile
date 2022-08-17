@@ -62,8 +62,5 @@ debug:
 	$(MAKE) fclean
 	$(MAKE) all
 
-test_ez: $(NAME)
-	$(CXX) $(CFLAGS) $(INCLUDE) main.cpp $(NAME) -o json.out && ./json.out tests/basic_test.json
-
 test: $(NAME)
-	$(CXX) $(CFLAGS) $(INCLUDE) main.cpp $(NAME) -o json.out && ./json.out tests/ft_ssl_tests.json
+	$(CXX) $(CFLAGS) $(INCLUDE) main.cpp $(NAME) -o json.out
