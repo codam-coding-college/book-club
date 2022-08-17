@@ -4,16 +4,16 @@
 #include <fstream>
 
 template<class T>
-int binary_search(std::vector<T> list, const T item) {
+int binary_search(const std::vector<T>& list, const T& item) {
 	size_t	low = 0;
-	size_t	high = list.size();
-	while (low < high) {
-		size_t mid = ((low + high) / 2);
+	size_t	high = list.size() - 1;
+	while (low <= high) {
+		int mid = ((low + high) / 2);
 		T guest = list.at(mid);
 		if (guest == item) {
 			return mid;
 		} else if (guest > item) {
-			high = mid - 1;
+				high = mid - 1;
 		} else {
 			low = mid + 1;
 		}
