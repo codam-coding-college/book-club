@@ -3,6 +3,4 @@ project(book-club)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(book-club srcs/main.cpp
-		srcs/binarySearch.cpp
-		includes/binarySearch.hpp)
+add_executable(book-club srcs/main.cpp)
