@@ -105,54 +105,54 @@ void	JsonNode::setNull() {
 }
 
 std::string JsonNode::toString(int indentLevel) const {
-	std::string spaceString = std::string(indentLevel, ' ');
+	std::string indentString = std::string(indentLevel, '\t');
+	std::string extraIndentString = std::string(indentLevel + 1, '\t');
 	std::string outputString;
+	outputString.reserve(1000);
 	switch (type) {
 		case e_type::STRING: {
-			outputString += spaceString + '"' + *values.str + '"';
+			outputString += indentString + '"' + *values.str + '"';
 			break;
 		}
 		case e_type::FLOAT: {
-			outputString += spaceString + std::to_string(values.f);
+			outputString += indentString + std::to_string(values.f);
 			break;
 		}
 		case e_type::INTEGER: {
-			outputString += spaceString + std::to_string((int)values.f);
+			outputString += indentString + std::to_string((int)values.f);
 			break;
 		}
 		case e_type::BOOLEAN: {
-			outputString += spaceString + (values.b ? "true" : "false");
+			outputString += indentString + (values.b ? "true" : "false");
 			break;
 		}
 		case e_type::NULL_TYPE: {
-			outputString += spaceString + "null";
+			outputString += indentString + "null";
 			break;
 		}
 		case e_type::LIST: {
-			std::cout << "[";
+			outputString += "[\n";
 			size_t index = 0;
-			for (auto node: (*values.list)) {
+			for (auto node: *values.list) {
 				outputString += node->toString(indentLevel + 1);
 				if (index < (*values.list).size() - 1) {
-					outputString += spaceString + ", ";
+					outputString += ",\n";
 				}
 				index++;
 			}
-			outputString += spaceString + "]\n";
+			outputString += indentString + "\n]";
 			break;
 		}
 		case e_type::OBJECT: {
 			outputString += "{\n";
-			for (JSONObject::iterator i = (*values.object).begin();
-				 i != (*values.object).end(); i++) {
-				outputString += spaceString + i->first + ": ";
-				outputString += i->second->toString(indentLevel + 1);
-				JSONObject::iterator next = i;
-				next++;
-				if ((next) != (*values.object).end()) {
-					outputString += spaceString + ",";
+			auto& end = *values.object->end();
+			for (auto& [key, value] : *values.object) {
+				outputString += extraIndentString + key + ": ";
+				outputString += value->toString(0);
+				if (key != end.first) {
+					outputString += ",";
 				}
-				outputString += spaceString + "\n";
+				outputString += "\n";
 			}
 			outputString += "}\n";
 		}

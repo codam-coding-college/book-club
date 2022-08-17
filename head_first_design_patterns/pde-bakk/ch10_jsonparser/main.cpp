@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 		try {
 			JsonParser	parser(argv[i]);
 			auto node = parser.parse();
-			std::cerr << *node << "\n";
+			std::cerr << "\n\n" << *node << "\n";
 		} catch (std::exception& e) {
 			std::cerr << "exception: " << e.what() << "\n";
 		}
