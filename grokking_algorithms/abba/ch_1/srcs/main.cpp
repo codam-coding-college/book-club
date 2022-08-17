@@ -7,13 +7,12 @@ template<class T>
 int binary_search(std::vector<T> list, const T item) {
 	size_t	low = 0;
 	size_t	high = list.size();
-	while (low <= high) {
+	while (low < high) {
 		size_t mid = ((low + high) / 2);
-		std::string guest = list.at(mid);
+		T guest = list.at(mid);
 		if (guest == item) {
 			return mid;
 		} else if (guest > item) {
-			std::cout << mid << " im here\n";
 			high = mid - 1;
 		} else {
 			low = mid + 1;
@@ -34,7 +33,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	std::string line;
-	while (is.good())
+	while (!is.fail())
 	{
 		getline(is, line);
 		if (line.size() > 0) {
