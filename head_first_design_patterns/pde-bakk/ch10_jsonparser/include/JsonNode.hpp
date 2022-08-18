@@ -31,8 +31,9 @@ class JsonNode {
 		JSONList	*list;
 		JSONObject	*object;
 		std::string	*str;
-		float		f;
-		bool		b;
+		int			iValue;
+		float		fValue;
+		bool		bValue;
 	} values;
 	e_type type;
 
@@ -40,6 +41,9 @@ public:
 	JsonNode();
 	JsonNode(e_type t);
 	~JsonNode();
+
+	e_type		getType() const;
+
 	JSONObject	returnObject();
 	JSONList	returnList();
 	std::string	returnString();
@@ -55,7 +59,7 @@ public:
 	void	setBoolean(bool b);
 	void	setNull();
 
-	std::string	toString(int indentLevel) const;
+	std::string	toString(int indentLevel = 0) const;
 };
 
 std::ostream&	operator<<(std::ostream& o, const JsonNode& x);

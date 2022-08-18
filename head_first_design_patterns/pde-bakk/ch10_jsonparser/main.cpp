@@ -4,12 +4,15 @@
 
 #include <iostream>
 #include "JsonParser.hpp"
+#include <unistd.h>
 
 int main(int argc, char **argv) {
+	int ret = EXIT_SUCCESS;
 	if (argc == 1) {
 		std::cerr << "Please enter a file to parse" << std::endl;
 		return (EXIT_FAILURE);
 	}
+
 	for (int i = 1; i < argc; i++) {
 		try {
 			JsonParser	parser(argv[i]);
@@ -17,6 +20,9 @@ int main(int argc, char **argv) {
 			std::cerr << "\n\n" << *node << "\n";
 		} catch (std::exception& e) {
 			std::cerr << "exception: " << e.what() << "\n";
+			ret |= EXIT_FAILURE;
 		}
 	}
+	system("leaks json.out");
+	return (ret);
 }

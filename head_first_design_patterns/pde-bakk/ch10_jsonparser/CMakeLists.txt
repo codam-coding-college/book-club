@@ -11,3 +11,5 @@ file(GLOB HEADER_FILES "include/*.hpp")
 add_library(json_parser ${SOURCE_FILES} ${HEADER_FILES})
 add_executable(test json_parser.a main.cpp)
 include_directories(include libft/include)
+
+add_subdirectory(tests)

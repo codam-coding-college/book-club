@@ -4,10 +4,8 @@
 
 #include "JsonParser.hpp"
 
-#include <utility>
 #include <iostream>
 #include <cctype>
-
 
 e_type	token_to_type(e_token token) {
 	switch (token) {
@@ -28,8 +26,10 @@ e_type	token_to_type(e_token token) {
 	}
 }
 
-JsonParser::JsonParser(const std::string& filename) : _file(filename), _root() {
-	this->_root = nullptr;
+JsonParser::JsonParser(const std::string& filename) : _file(filename), _root(nullptr) {
+	if (!_file) {
+		throw std::runtime_error("unable to open file '" + filename + "'");
+	}
 }
 
 JsonParser::~JsonParser() {
@@ -37,8 +37,6 @@ JsonParser::~JsonParser() {
 }
 
 JsonNode* JsonParser::parse() {
-//	char c;
-
 	if (_file.eof()) {
 		std::cerr << "EOF reached\n";
 		return (nullptr);
@@ -46,7 +44,7 @@ JsonNode* JsonParser::parse() {
 
 	e_token token = this->parse_token();
 	e_type type = token_to_type(token);
-	fprintf(stderr, "token = %s\n", tokenToString(token).c_str());
+//	fprintf(stderr, "token = %s\n", tokenToString(token).c_str());
 	JsonNode*	node = nullptr;
 	switch (type) {
 		case (e_type::FLOAT):
@@ -79,7 +77,7 @@ static e_token parse_int(char c) {
 	//TODO: check if float
 	if ((c >= '0' && c <= '9') || c == '+' || c == '-')
 		return (e_token::INTEGER);
-	std::string error("invalid token: ");
+	std::string error("int: invalid token: ");
 	error.push_back(c);
 	throw std::runtime_error(error);
 }
@@ -148,8 +146,9 @@ JsonNode* JsonParser::parse_object() {
 			char colon = _file.get();
 			assert(colon == ':');
 			JsonNode*	value = parse();
-			assert(value);
-			std::cerr << "value = " << value->toString(0) << "\n";
+			if (value == nullptr)
+				throw std::runtime_error("Error trying to parse object value");
+			std::cerr << "value = " << value->toString() << "\n";
 			(*object)[key] = value;
 			std::cerr << "object now has " << object->size() << " elems\n";
 		}
@@ -161,32 +160,30 @@ JsonNode* JsonParser::parse_object() {
 JsonNode* JsonParser::parse_list() {
 	JsonNode*	node = new JsonNode();
 	JSONList*	list = new JSONList();
-	bool completed = false;
 
+	node->setList(list);
 	fprintf(stderr, "parsing LIST\n");
-	if (_file.peek() == '[') {
-		std::cerr << "I thought I wouldn't see this opening bracket, but I guess here it is\n";
+	if (!_file.eof() && _file.peek() == ']') {
+		_file.get();
+		return (node);
 	}
-	while (!completed && !_file.eof()) {
+	while (!_file.eof()) {
 		char c = this->get_next_nonspace();
+		this->_file.unget();
+		JsonNode*	new_elem = this->parse();
+		assert(new_elem);
+		list->push_back(new_elem);
+
+		c = this->get_next_nonspace();
 		if (c == ']') {
 			fprintf(stderr, "found the end of LIST\n");
-			completed = true;
+			break ;
 		}
-		else if (c == ',') {
-			std::cerr << "found a comma in my list\n";
-		}
-		else {
-			this->_file.unget();
-			JsonNode*	new_elem = this->parse();
-			assert(new_elem);
-//			std::cerr << "LIST_element = " << new_elem->toString(2) << '\n';
-			list->push_back(new_elem);
-//			std::cerr << "list now has " << list->size() << " elems\n";
-//			std::cerr << "next elem is " << _file.peek() << "\n";
+		else if (c != ',') {
+			throw std::runtime_error("List item wasn't followed by comma or closing bracket");
 		}
 	}
-	node->setList(list);
+
 	return (node);
 }
 
@@ -200,12 +197,17 @@ JsonNode* JsonParser::parse_string() {
 
 JsonNode* JsonParser::parse_number() {
 	const auto next = get_next_item();
-	const float value = std::stof(next);
-	JsonNode* node = new JsonNode();
-	if (next.find('.') == std::string::npos)
-		node->setInteger(static_cast<int>(value));
-	else
-		node->setFloat(value);
+	JsonNode* node = nullptr;
+	if (next.find('.') == std::string::npos) {
+		// int
+		int val = std::stoi(next);
+		node = new JsonNode();
+		node->setInteger(val);
+	} else {
+		float val = std::stof(next);
+		node = new JsonNode();
+		node->setFloat(val);
+	}
 	return (node);
 }
 
@@ -266,12 +268,12 @@ std::string JsonParser::get_next_string() {
 
 char JsonParser::get_next_nonspace() {
 	char c = _file.get();
-	std::cerr << "got: " << c;
+//	std::cerr << "got: " << c;
 	while (isspace(c) && !this->_file.eof()) {
 		c = _file.get();
-		std::cerr << c;
+//		std::cerr << c;
 	}
-	fprintf(stderr, "|last c = %c\n", c);
+//	fprintf(stderr, "|last c = %c\n", c);
 	return (c);
 }
 

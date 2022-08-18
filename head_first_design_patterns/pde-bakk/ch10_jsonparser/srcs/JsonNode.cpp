@@ -49,25 +49,19 @@ std::string JsonNode::returnString() {
 float JsonNode::returnFloat() {
 	if (type != e_type::FLOAT)
 		throw std::logic_error("returnFloat called on non-number");
-	return (values.f);
+	return (values.fValue);
 }
 
 int JsonNode::returnInt() {
 	if (type != e_type::INTEGER)
 		throw std::logic_error("returnFloat called on non-number");
-	return (static_cast<int>(values.f));
+	return (values.iValue);
 }
-
-//int JsonNode::returnInt() {
-//	if (type != e_type::INTEGER)
-//		throw std::logic_error("returnInt called on non-int");
-//	return (values.integer);
-//}
 
 bool JsonNode::returnBool() {
 	if (type != e_type::BOOLEAN)
 		throw std::logic_error("returnBool called on non-boolean");
-	return (values.b);
+	return (values.bValue);
 }
 
 void JsonNode::setObject(JSONObject* object) {
@@ -87,17 +81,17 @@ void JsonNode::setString(std::string* s) {
 
 void JsonNode::setFloat(float f) {
 	this->type = e_type::FLOAT;
-	this->values.f = f;
+	this->values.fValue = f;
 }
 
 void JsonNode::setInteger(int i) {
 	this->type = e_type::INTEGER;
-	this->values.f = i;
+	this->values.iValue = i;
 }
 
 void JsonNode::setBoolean(bool b) {
 	this->type = e_type::BOOLEAN;
-	this->values.b = b;
+	this->values.bValue = b;
 }
 
 void	JsonNode::setNull() {
@@ -115,15 +109,15 @@ std::string JsonNode::toString(int indentLevel) const {
 			break;
 		}
 		case e_type::FLOAT: {
-			outputString += indentString + std::to_string(values.f);
+			outputString += indentString + std::to_string(values.fValue);
 			break;
 		}
 		case e_type::INTEGER: {
-			outputString += indentString + std::to_string((int)values.f);
+			outputString += indentString + std::to_string(values.iValue);
 			break;
 		}
 		case e_type::BOOLEAN: {
-			outputString += indentString + (values.b ? "true" : "false");
+			outputString += indentString + (values.bValue ? "true" : "false");
 			break;
 		}
 		case e_type::NULL_TYPE: {
@@ -163,4 +157,8 @@ std::string JsonNode::toString(int indentLevel) const {
 std::ostream&	operator<<(std::ostream& o, const JsonNode& x) {
 	o << x.toString(0);
 	return (o);
+}
+
+e_type JsonNode::getType() const {
+	return (this->type);
 }
