@@ -14,8 +14,6 @@ TEST_CASE("test_boolean_true", "[boolean tests]") {
 		REQUIRE(node->getType() == e_type::BOOLEAN);
 		bool boolean = node->returnBool();
 		REQUIRE(boolean == true);
-
-
 	} catch(std::exception& e) {
 		// we shouldn't get here
 		std::cerr << "exception: " << e.what() << "\n";

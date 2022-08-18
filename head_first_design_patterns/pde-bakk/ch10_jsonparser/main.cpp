@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "JsonParser.hpp"
-#include <unistd.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv) {
 	int ret = EXIT_SUCCESS;

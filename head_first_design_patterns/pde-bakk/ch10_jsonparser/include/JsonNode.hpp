@@ -62,6 +62,7 @@ public:
 	std::string	toString(int indentLevel = 0) const;
 };
 
+std::string	typeToString(e_type type);
 std::ostream&	operator<<(std::ostream& o, const JsonNode& x);
 
 

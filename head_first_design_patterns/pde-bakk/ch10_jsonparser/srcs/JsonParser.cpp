@@ -77,7 +77,7 @@ static e_token parse_int(char c) {
 	//TODO: check if float
 	if ((c >= '0' && c <= '9') || c == '+' || c == '-')
 		return (e_token::INTEGER);
-	std::string error("int: invalid token: ");
+	std::string error("Number: Invalid token: ");
 	error.push_back(c);
 	throw std::runtime_error(error);
 }
@@ -198,7 +198,12 @@ JsonNode* JsonParser::parse_string() {
 JsonNode* JsonParser::parse_number() {
 	const auto next = get_next_item();
 	JsonNode* node = nullptr;
-	if (next.find('.') == std::string::npos) {
+	const size_t amount_dots = std::count(next.begin(), next.end(), '.');
+
+	if (amount_dots > 1 || (amount_dots == 1 && next.back() == '.')) {
+		throw std::runtime_error("Invalid float: " + next);
+	}
+	if (amount_dots == 0) {
 		// int
 		int val = std::stoi(next);
 		node = new JsonNode();
@@ -242,10 +247,13 @@ std::string JsonParser::get_next_item() {
 	skipws(this->_file);
 	while (!_file.eof()) {
 		char newchar = _file.get();
+		if (_file.eof())
+			break;
 		if (isspace(newchar) || newchar == ',' || newchar == '}' || newchar == ']') {
 			this->_file.unget();
 			break ;
-		}
+		} else if (newchar == '\0')
+			break ;
 		str += newchar;
 	}
 	return (str);
@@ -268,16 +276,13 @@ std::string JsonParser::get_next_string() {
 
 char JsonParser::get_next_nonspace() {
 	char c = _file.get();
-//	std::cerr << "got: " << c;
 	while (isspace(c) && !this->_file.eof()) {
 		c = _file.get();
-//		std::cerr << c;
 	}
-//	fprintf(stderr, "|last c = %c\n", c);
 	return (c);
 }
 
-std::string	tokenToString(const e_token& token) {
+std::string	tokenToString(const e_token token) {
 	switch (token) {
 		case e_token::CURLY_OPEN:
 			return ("e_token::CURLY_OPEN");

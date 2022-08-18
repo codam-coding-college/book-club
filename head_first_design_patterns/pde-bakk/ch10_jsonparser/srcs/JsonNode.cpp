@@ -162,3 +162,22 @@ std::ostream&	operator<<(std::ostream& o, const JsonNode& x) {
 e_type JsonNode::getType() const {
 	return (this->type);
 }
+
+std::string	typeToString(const e_type type) {
+	switch (type) {
+		case e_type::LIST:
+			return ("e_type::LIST");
+		case e_type::STRING:
+			return ("e_type::STRING");
+		case e_type::INTEGER:
+			return ("e_type::INTEGER");
+		case e_type::OBJECT:
+			return ("e_type::OBJECT");
+		case e_type::FLOAT:
+			return ("e_type::FLOAT");
+		case e_type::BOOLEAN:
+			return ("e_type::BOOLEAN");
+		case e_type::NULL_TYPE:
+			return ("e_type::NULL_TYPE");
+	}
+}
