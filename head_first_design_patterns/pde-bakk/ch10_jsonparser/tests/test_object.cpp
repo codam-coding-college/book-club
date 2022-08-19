@@ -9,15 +9,13 @@ static std::string	TEST_FOLDER = "../../tests/jsons/object/";
 
 TEST_CASE("test_object", "[object tests]") {
 	try {
-		JsonParser	parser(TEST_FOLDER + "test_list_small.json");
+		JsonParser	parser(TEST_FOLDER + "simple.json");
 		auto node = parser.parse();
-		REQUIRE(node->getType() == e_type::LIST);
-		auto list = node->returnList();
-		REQUIRE(list.size() == 4);
-		REQUIRE(list[0]->getType() == e_type::INTEGER);
-		REQUIRE(list[1]->getType() == e_type::STRING);
-		REQUIRE(list[2]->getType() == e_type::BOOLEAN);
-		REQUIRE(list[3]->getType() == e_type::NULL_TYPE);
+		REQUIRE(node->getType() == e_type::OBJECT);
+		auto& obj = node->returnObject();
+//		REQUIRE(obj.size() == 2);
+		auto firstItem = obj.at("first");
+		std::cerr << "firstItem type = " << (int)firstItem->getType() << "\n";
 
 	} catch(std::exception& e) {
 		// we shouldn't get here

@@ -126,34 +126,37 @@ char JsonParser::get_next_char() {
 JsonNode* JsonParser::parse_object() {
 	JsonNode*	node = new JsonNode();
 	JSONObject*	object = new JSONObject();
-	bool completed = false;
+	node->setObject(object);
 
-	if (_file.peek() == '{') {
-		std::cerr << "I thought I wouldn't see this opening bracket, but I guess here it is\n";
+	if (!_file.eof() && _file.peek() == '}') {
+		_file.get();
+		fprintf(stderr, "empty OBJECT\n");
+		return (node);
 	}
-	while (!completed && !_file.eof()) {
+	while (!_file.eof()) {
 		char c = this->get_next_nonspace();
+
+//		this->_file.unget();
+		fprintf(stderr, "c = %c|\n", c);
+		assert(c == '"');
+		std::string key = get_next_string();
+		fprintf(stderr, "key = %s|\n", key.c_str());
+		char colon = this->get_next_nonspace();
+		fprintf(stderr, "peeking gives %c|\n", _file.peek());
+		if (colon != ':')
+			throw std::runtime_error("Object key needs to be followed by a colon (:)");
+		JsonNode*	value = parse();
+		if (value == nullptr)
+			throw std::runtime_error("Error trying to parse object value");
+		(*object)[key] = value;
+		c = this->get_next_nonspace();
 		if (c == '}') {
 			fprintf(stderr, "found the end of OBJECT\n");
-			completed = true;
-		}
-		else if (c == ',') {
-			fprintf(stderr, " found a comma in my object\n");
-		} else {
-			assert(c == '"');
-			std::string key = get_next_string();
-			std::cerr << "key = " << key << "\n";
-			char colon = _file.get();
-			assert(colon == ':');
-			JsonNode*	value = parse();
-			if (value == nullptr)
-				throw std::runtime_error("Error trying to parse object value");
-			std::cerr << "value = " << value->toString() << "\n";
-			(*object)[key] = value;
-			std::cerr << "object now has " << object->size() << " elems\n";
+			break ;
+		} else if (c != ',') {
+			throw std::runtime_error("Object kv-pair wasn't followed by comma or closing bracket");
 		}
 	}
-	node->setObject(object);
 	return (node);
 }
 
@@ -271,10 +274,10 @@ std::string JsonParser::get_next_string() {
 
 	str.reserve(1290); // scientifically proven to be optimal
 
-	skipws(this->_file);
+	skipws(this->_file); // TODO: if theres spaces inside quotations, change
 	while (!_file.eof()) {
 		char newchar = _file.get();
-		if (newchar == '"' && (str.empty() || str.back() != '\\'))
+		if (_file.eof() || (newchar == '"' && (str.empty() || str.back() != '\\')))
 			break ;
 		str += newchar;
 	}

@@ -44,9 +44,9 @@ public:
 
 	e_type		getType() const;
 
-	JSONObject	returnObject();
-	JSONList	returnList();
-	std::string	returnString();
+	JSONObject& returnObject();
+	JSONList& returnList();
+	std::string& returnString();
 	float		returnFloat();
 	int			returnInt();
 	bool		returnBool();

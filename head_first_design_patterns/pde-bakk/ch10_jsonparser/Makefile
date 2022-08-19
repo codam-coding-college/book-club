@@ -62,5 +62,8 @@ debug:
 	$(MAKE) fclean
 	$(MAKE) all
 
-test: $(NAME)
+exec: $(NAME)
 	$(CXX) $(CFLAGS) $(INCLUDE) main.cpp $(NAME) -o json.out
+
+test:
+	./run_tests.sh
