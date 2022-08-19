@@ -1,6 +1,8 @@
 set -e
 
-
+if [[ ! -d cmake-build-debug ]]; then
+  cmake -B cmake-build-debug
+fi
 cd cmake-build-debug
 cmake --build . --target json_parser
 
