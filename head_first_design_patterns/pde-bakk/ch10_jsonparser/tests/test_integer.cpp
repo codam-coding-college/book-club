@@ -8,7 +8,7 @@
 
 static std::string	TEST_FOLDER = "../../tests/jsons/int/";
 
-TEST_CASE("42", "[list tests]") {
+TEST_CASE("42", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "42.json");
 		auto node = parser.parse();
@@ -22,7 +22,7 @@ TEST_CASE("42", "[list tests]") {
 	}
 }
 
-TEST_CASE("-42", "[list tests]") {
+TEST_CASE("-42", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "neg42.json");
 		auto node = parser.parse();
@@ -36,7 +36,7 @@ TEST_CASE("-42", "[list tests]") {
 	}
 }
 
-TEST_CASE("zero", "[list tests]") {
+TEST_CASE("zero", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "zero.json");
 		auto node = parser.parse();
@@ -50,7 +50,7 @@ TEST_CASE("zero", "[list tests]") {
 	}
 }
 
-TEST_CASE("int_max", "[list tests]") {
+TEST_CASE("int_max", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "int_max.json");
 		auto node = parser.parse();
@@ -64,7 +64,7 @@ TEST_CASE("int_max", "[list tests]") {
 	}
 }
 
-TEST_CASE("int_min", "[list tests]") {
+TEST_CASE("int_min", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "int_min.json");
 		auto node = parser.parse();
@@ -75,5 +75,20 @@ TEST_CASE("int_min", "[list tests]") {
 		// we shouldn't get here
 		std::cerr << "exception: " << e.what() << "\n";
 		REQUIRE(false);
+	}
+}
+
+TEST_CASE("42g", "[integer tests]") {
+	try {
+		JsonParser	parser(TEST_FOLDER + "42g.json");
+		auto node = parser.parse();
+		std::cerr << "node = " << node->returnInt() << '\n';
+		(void)node;
+		REQUIRE(false);
+	} catch(std::exception& e) {
+		// we shouldn't get here
+		std::cerr << "exception: " << e.what() << "\n";
+		std::string errmsg = e.what();
+		REQUIRE(errmsg.find("Invalid integer") != std::string::npos);
 	}
 }

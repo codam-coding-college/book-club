@@ -198,6 +198,7 @@ JsonNode* JsonParser::parse_string() {
 JsonNode* JsonParser::parse_number() {
 	const auto next = get_next_item();
 	JsonNode* node = nullptr;
+	std::string::size_type pos;
 	const size_t amount_dots = std::count(next.begin(), next.end(), '.');
 
 	if (amount_dots > 1 || (amount_dots == 1 && next.back() == '.')) {
@@ -205,11 +206,17 @@ JsonNode* JsonParser::parse_number() {
 	}
 	if (amount_dots == 0) {
 		// int
-		int val = std::stoi(next);
+		int val = std::stoi(next, &pos);
+		if (pos != next.size()) {
+			throw std::runtime_error("Invalid integer: " + next);
+		}
 		node = new JsonNode();
 		node->setInteger(val);
 	} else {
-		float val = std::stof(next);
+		float val = std::stof(next, &pos);
+		if (pos != next.size()) {
+			throw std::runtime_error("Invalid float: " + next);
+		}
 		node = new JsonNode();
 		node->setFloat(val);
 	}
