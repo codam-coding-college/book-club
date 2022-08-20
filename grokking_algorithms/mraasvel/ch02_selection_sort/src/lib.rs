@@ -1,20 +1,18 @@
-use std::cmp::Ordering;
-
 fn find_smallest<T>(table: &[T]) -> usize
 where
-    T: PartialOrd,
+    T: Ord,
 {
     table
         .iter()
         .enumerate()
-        .min_by(|(_, x), (_, y)| x.partial_cmp(y).unwrap_or(Ordering::Equal))
+        .min_by(|(_, x), (_, y)| x.cmp(y))
         .map(|(index, _)| index)
         .unwrap_or(0)
 }
 
 pub fn selection_sort<T>(table: &mut [T])
 where
-    T: PartialOrd,
+    T: Ord,
 {
     if table.is_empty() {
         return;
