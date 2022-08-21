@@ -12,4 +12,18 @@ add_library(json_parser ${SOURCE_FILES} ${HEADER_FILES})
 #add_executable(test json_parser.a main.cpp)
 include_directories(include libft/include)
 
-add_subdirectory(tests)
+
+
+## Testing suite:
+
+# Catch2
+Include(FetchContent)
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v2.13.1
+)
+file(GLOB test_srcs "tests/*.cpp")
+FetchContent_MakeAvailable(Catch2)
+add_executable(test.out ${test_srcs} ${SOURCE_FILES} ${HEADER_FILES})
+target_link_libraries(test.out PUBLIC Catch2::Catch2)
