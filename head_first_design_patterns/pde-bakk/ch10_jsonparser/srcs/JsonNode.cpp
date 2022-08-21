@@ -127,20 +127,28 @@ std::string JsonNode::toString(int indentLevel) const {
 			break;
 		}
 		case e_type::LIST: {
-			outputString += "[\n";
-			size_t index = 0;
-			for (auto node: *values.list) {
+			if (values.list->empty()) {
+				outputString += indentString + "[]";
+				break ;
+			}
+			outputString += indentString + "[\n";
+			size_t size = values.list->size();
+			for (size_t index = 0; index < size; index++) {
+				auto& node = (*values.list)[index];
 				outputString += node->toString(indentLevel + 1);
 				if (index < (*values.list).size() - 1) {
 					outputString += ",\n";
 				}
-				index++;
 			}
-			outputString += indentString + "\n]";
+			outputString += indentString + '\n' + indentString + ']';
 			break;
 		}
 		case e_type::OBJECT: {
-			outputString += "{\n";
+			if (values.object->empty()) {
+				outputString += indentString + "{}";
+				break ;
+			}
+			outputString += indentString + "{\n";
 			auto& end = *values.object->end();
 			for (auto& [key, value] : *values.object) {
 				outputString += extraIndentString + key + ": ";
@@ -150,7 +158,7 @@ std::string JsonNode::toString(int indentLevel) const {
 				}
 				outputString += "\n";
 			}
-			outputString += "}\n";
+			outputString += indentString + '\n' + indentString + '}';
 		}
 	}
 	return (outputString);
