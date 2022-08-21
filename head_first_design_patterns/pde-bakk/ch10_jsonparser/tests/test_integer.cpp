@@ -5,8 +5,8 @@
 #include <catch2/catch.hpp>
 #include "JsonParser.hpp"
 #include <climits>
-
-static std::string	TEST_FOLDER = "../../tests/jsons/int/";
+#include <unistd.h>
+static std::string	TEST_FOLDER = "../tests/jsons/int/";
 
 TEST_CASE("42", "[integer tests]") {
 	try {
@@ -22,9 +22,9 @@ TEST_CASE("42", "[integer tests]") {
 	}
 }
 
-TEST_CASE("-42", "[integer tests]") {
+TEST_CASE("minus 42", "[integer tests]") {
 	try {
-		JsonParser	parser(TEST_FOLDER + "neg42.json");
+		JsonParser	parser(TEST_FOLDER + "minus42.json");
 		auto node = parser.parse();
 		REQUIRE(node->getType() == e_type::INTEGER);
 		int integer = node->returnInt();

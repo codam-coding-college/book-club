@@ -5,7 +5,7 @@
 #include <catch2/catch.hpp>
 #include "JsonParser.hpp"
 
-static std::string	TEST_FOLDER = "../../tests/jsons/nulltype/";
+static std::string	TEST_FOLDER = "../tests/jsons/nulltype/";
 
 TEST_CASE("null", "[nulltype tests]") {
 	try {

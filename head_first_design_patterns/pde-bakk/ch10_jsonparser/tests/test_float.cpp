@@ -7,7 +7,7 @@
 #include <cmath>
 
 static const float EPSILON = 0.00001;
-static std::string	TEST_FOLDER = "../../tests/jsons/float/";
+static std::string	TEST_FOLDER = "../tests/jsons/float/";
 
 static bool areSame(float a, float b) {
 	return (fabs(a - b) < EPSILON);
@@ -51,8 +51,9 @@ TEST_CASE("double_dot", "[float tests]") {
 		REQUIRE(false);
 	} catch(std::exception& e) {
 		// we shouldn't get here
-		std::cerr << "exception: " << e.what() << "\n";
-		REQUIRE(true);
+		std::string errmsg = e.what();
+		std::cerr << "exception: " << errmsg << "\n";
+		REQUIRE(errmsg.find("Invalid float") != std::string::npos);
 	}
 
 	try {
@@ -62,9 +63,9 @@ TEST_CASE("double_dot", "[float tests]") {
 		std::cout << *node;
 		REQUIRE(false);
 	} catch(std::exception& e) {
-		// we shouldn't get here
-		std::cerr << "exception: " << e.what() << "\n";
-		REQUIRE(true);
+		std::string errmsg = e.what();
+		std::cerr << "exception: " << errmsg << "\n";
+		REQUIRE(errmsg.find("Invalid float") != std::string::npos);
 	}
 
 }
@@ -77,9 +78,9 @@ TEST_CASE("many_dots", "[float tests]") {
 		std::cout << *node;
 		REQUIRE(false);
 	} catch(std::exception& e) {
-		// we shouldn't get here
-		std::cerr << "exception: " << e.what() << "\n";
-		REQUIRE(true);
+		std::string errmsg = e.what();
+		std::cerr << "exception: " << errmsg << "\n";
+		REQUIRE(errmsg.find("Invalid float") != std::string::npos);
 	}
 }
 
@@ -90,7 +91,6 @@ TEST_CASE("dot_before", "[float tests]") {
 		(void)node;
 		REQUIRE(false);
 	} catch(std::exception& e) {
-		// we shouldn't get here
 		std::cerr << "exception: " << e.what() << "\n";
 		std::string errmsg = e.what();
 		REQUIRE(errmsg.find("Number: Invalid token") != std::string::npos);
@@ -105,8 +105,8 @@ TEST_CASE("dot_after", "[float tests]") {
 		std::cout << typeToString(node->getType()) << ": " << *node;
 		REQUIRE(false);
 	} catch(std::exception& e) {
-		// we shouldn't get here
 		std::string errmsg = e.what();
+		std::cerr << "exception: " << errmsg << "\n";
 		REQUIRE(errmsg.find("Invalid float") != std::string::npos);
 	}
 }

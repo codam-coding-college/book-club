@@ -1,19 +1,27 @@
 set -e
 
+for arg in "$@"
+do
+  if [[ -$arg == -"--help" ]]; then
+    echo "Run me without arguments to run all the tests,"
+    echo "Or specify one or more of the following to run their specific tests"
+    echo "boolean, foat, integer, list, nulltype, object, string"
+    exit 0
+  fi
+done
+
+
 if [[ ! -d cmake-build-debug ]]; then
   cmake -B cmake-build-debug
 fi
 cd cmake-build-debug
-cmake --build . --target json_parser
+cmake --build . --target test.out
 
-cd -
-cd tests
-if [[ ! -d cmake-build-debug ]]; then
-  cmake -B cmake-build-debug
+if [[ $# -eq 0 ]]; then
+  ./test.out -d yes --order lex
+else
+  for arg in "$@"
+  do
+    ./test.out -d yes --order lex -# ["#test_${arg}"]
+  done
 fi
-cd -
-cmake --build cmake-build-debug --target test.out  # I think --target test.out is optional
-
-pwd
-cd cmake-build-debug/tests
-./test.out -d yes --order lex
