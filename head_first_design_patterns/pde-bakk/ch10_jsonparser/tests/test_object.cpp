@@ -15,7 +15,7 @@ TEST_CASE("test_object", "[object tests]") {
 		auto& obj = node->returnObject();
 //		REQUIRE(obj.size() == 2);
 		auto firstItem = obj.at("first");
-		std::cerr << "firstItem type = " << (int)firstItem->getType() << "\n";
+		std::cerr << "firstItem type = " << firstItem->getTypeAsString() << "\n";
 
 	} catch(std::exception& e) {
 		// we shouldn't get here

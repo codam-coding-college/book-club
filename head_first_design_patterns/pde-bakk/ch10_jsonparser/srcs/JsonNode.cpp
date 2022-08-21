@@ -173,6 +173,10 @@ e_type JsonNode::getType() const {
 	return (this->type);
 }
 
+std::string JsonNode::getTypeAsString() const {
+	return (typeToString(this->type));
+}
+
 std::string	typeToString(const e_type type) {
 	switch (type) {
 		case e_type::LIST:

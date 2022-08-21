@@ -39,10 +39,11 @@ class JsonNode {
 
 public:
 	JsonNode();
-	JsonNode(e_type t);
+	explicit JsonNode(e_type t);
 	~JsonNode();
 
 	e_type		getType() const;
+	std::string		getTypeAsString() const;
 
 	JSONObject& returnObject();
 	JSONList& returnList();
