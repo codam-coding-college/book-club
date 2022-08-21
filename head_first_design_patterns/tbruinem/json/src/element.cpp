@@ -21,7 +21,7 @@ Element Element::STRING(ParsedJSON json)
 	auto element = Element();
 	element.SetBasicValues(json);
 	assert(element.type == ElementType::JSON_STRING);
-	return move(element);
+	return element;
 }
 
 Element Element::BOOL(ParsedJSON json)
@@ -29,7 +29,7 @@ Element Element::BOOL(ParsedJSON json)
 	auto element = Element();
 	element.SetBasicValues(json);
 	assert(element.type == ElementType::JSON_BOOL);
-	return move(element);
+	return element;
 }
 
 static void FillChildrenVector(vector<unique_ptr<Element>>& children, ParsedJSON* elements) {
@@ -48,7 +48,7 @@ Element Element::ARRAY(ParsedJSON json)
 	element.SetBasicValues(json);
 	assert(element.type == ElementType::JSON_ARRAY);
 	FillChildrenVector(element.children, (ParsedJSON*)element.value_.pointer);
-	return move(element);
+	return element;
 }
 
 Element Element::GROUP(ParsedJSON json)
@@ -57,7 +57,7 @@ Element Element::GROUP(ParsedJSON json)
 	element.SetBasicValues(json);
 	assert(element.type == ElementType::JSON_OBJECT);
 	FillChildrenVector(element.children, (ParsedJSON*)element.value_.pointer);
-	return move(element);
+	return element;
 }
 
 Element Element::NULL_ELEM(ParsedJSON json)
@@ -65,7 +65,7 @@ Element Element::NULL_ELEM(ParsedJSON json)
 	auto element = Element();
 	element.SetBasicValues(json);
 	assert(element.type == ElementType::JSON_NULL);
-	return move(element);
+	return element;
 }
 
 Element Element::NUMBER(ParsedJSON json)
@@ -73,7 +73,7 @@ Element Element::NUMBER(ParsedJSON json)
 	auto element = Element();
 	element.SetBasicValues(json);
 	assert(element.type == ElementType::JSON_INTEGER);
-	return move(element);
+	return element;
 }
 
 static string Indent(size_t depth) {
