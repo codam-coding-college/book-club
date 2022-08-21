@@ -265,6 +265,27 @@ std::string JsonParser::get_next_item() {
 	return (str);
 }
 
+static char	unescape_character(const char c) {
+	switch (c) {
+		case ('b'):
+			return ('\b');
+		case ('f'):
+			return ('\f');
+		case ('n'):
+			return ('\n');
+		case ('t'):
+			return ('\t');
+		case ('r'):
+			return ('\r');
+		case ('\\'):
+			return ('\\');
+		case ('"'):
+			return ('\"');
+		default:
+			throw std::runtime_error(std::string("bad esacape sequence \\") + c);
+	}
+}
+
 std::string JsonParser::get_next_string() {
 	std::string str;
 
@@ -272,9 +293,20 @@ std::string JsonParser::get_next_string() {
 
 	skipws(this->_file); // TODO: if theres spaces inside quotations, change
 	while (!_file.eof()) {
-		char newchar = _file.get();
-		if (_file.eof() || (newchar == '"' && (str.empty() || str.back() != '\\')))
+		const char newchar = _file.get();
+		if (_file.eof())
 			break ;
+		if (newchar == '\\') {
+			const char escape = _file.get();
+			if (_file.eof()) {
+				throw std::runtime_error("Invalid string: Not allowed to end with a single backslash");
+			}
+			str += unescape_character(escape);
+			continue ;
+		}
+		if (newchar == '"') {
+			break ;
+		}
 		str += newchar;
 	}
 	return (str);
