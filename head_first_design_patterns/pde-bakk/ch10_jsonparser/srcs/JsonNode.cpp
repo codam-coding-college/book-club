@@ -67,8 +67,6 @@ bool JsonNode::returnBool() {
 void JsonNode::setObject(JSONObject* object) {
 	this->type = e_type::OBJECT;
 	this->values.object = object;
-	fprintf(stderr, "setObject: %p this=%p\n", (values.object), (void *)this);
-
 }
 
 void JsonNode::setList(JSONList* list) {
@@ -79,7 +77,6 @@ void JsonNode::setList(JSONList* list) {
 void JsonNode::setString(std::string* s) {
 	this->type = e_type::STRING;
 	this->values.str = s;
-	fprintf(stderr, "setString: %p %s this=%p\n", (values.str), values.str->c_str(), (void *)this);
 }
 
 void JsonNode::setFloat(float f) {
@@ -106,16 +103,11 @@ std::string JsonNode::toString(int indentLevel) const {
 	std::string extraIndentString = std::string(indentLevel + 1, '\t');
 	std::string outputString;
 	outputString.reserve(1000);
-	fprintf(stderr, "type=%d, haha\n", type);
 	switch (type) {
 		case e_type::STRING: {
-			fprintf(stderr, "lets go\n");
 			outputString += indentString + '"';
-			fprintf(stderr, "lets go %p\n", (void *)values.str);
 			outputString += *values.str;
-			fprintf(stderr, "lets go\n");
 			outputString += '"';
-			fprintf(stderr, "done\n");
 			break;
 		}
 		case e_type::FLOAT: {
