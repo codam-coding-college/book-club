@@ -13,10 +13,13 @@ TEST_CASE("test_object", "[object tests]") {
 		auto node = parser.parse();
 		REQUIRE(node->getType() == e_type::OBJECT);
 		auto& obj = node->returnObject();
-//		REQUIRE(obj.size() == 2);
+		REQUIRE(obj.size() == 2);
 		auto firstItem = obj.at("first");
-		std::cerr << "firstItem type = " << firstItem->getTypeAsString() << "\n";
-
+		REQUIRE(firstItem->getType() == e_type::STRING);
+		REQUIRE(firstItem->returnString() == "foo");
+		auto secondItem = obj.at("second");
+		REQUIRE(secondItem->getType() == e_type::STRING);
+		REQUIRE(secondItem->returnString() == "bar");
 	} catch(std::exception& e) {
 		// we shouldn't get here
 		std::cerr << "exception: " << e.what() << "\n";

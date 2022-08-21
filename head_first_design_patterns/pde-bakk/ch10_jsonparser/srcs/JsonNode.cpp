@@ -24,7 +24,7 @@ JsonNode::~JsonNode() {
 		}
 	}
 	else if (this->type == e_type::STRING) {
-		delete this->values.object;
+		delete this->values.str;
 	}
 }
 
@@ -102,7 +102,7 @@ std::string JsonNode::toString(int indentLevel) const {
 	std::string indentString = std::string(indentLevel, '\t');
 	std::string extraIndentString = std::string(indentLevel + 1, '\t');
 	std::string outputString;
-	outputString.reserve(1000);
+	outputString.reserve(SCIENTIFICALLY_PROVEN_OPTIMAL_RESERVE_QUANTITY);
 	switch (type) {
 		case e_type::STRING: {
 			outputString += indentString + '"';

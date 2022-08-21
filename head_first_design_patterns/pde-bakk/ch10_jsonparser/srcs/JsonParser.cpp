@@ -130,19 +130,16 @@ JsonNode* JsonParser::parse_object() {
 
 	if (!_file.eof() && _file.peek() == '}') {
 		_file.get();
-		fprintf(stderr, "empty OBJECT\n");
 		return (node);
 	}
 	while (!_file.eof()) {
 		char c = this->get_next_nonspace();
 
-//		this->_file.unget();
-		fprintf(stderr, "c = %c|\n", c);
-		assert(c == '"');
+		if (c != '"') {
+			throw std::runtime_error("Object key needs to be within double-quotes (\"key\")");
+		}
 		std::string key = get_next_string();
-		fprintf(stderr, "key = %s|\n", key.c_str());
 		char colon = this->get_next_nonspace();
-		fprintf(stderr, "peeking gives %c|\n", _file.peek());
 		if (colon != ':')
 			throw std::runtime_error("Object key needs to be followed by a colon (:)");
 		JsonNode*	value = parse();
@@ -151,7 +148,6 @@ JsonNode* JsonParser::parse_object() {
 		(*object)[key] = value;
 		c = this->get_next_nonspace();
 		if (c == '}') {
-			fprintf(stderr, "found the end of OBJECT\n");
 			break ;
 		} else if (c != ',') {
 			throw std::runtime_error("Object kv-pair wasn't followed by comma or closing bracket");
@@ -165,7 +161,6 @@ JsonNode* JsonParser::parse_list() {
 	JSONList*	list = new JSONList();
 
 	node->setList(list);
-	fprintf(stderr, "parsing LIST\n");
 	if (!_file.eof() && _file.peek() == ']') {
 		_file.get();
 		return (node);
@@ -174,12 +169,13 @@ JsonNode* JsonParser::parse_list() {
 		char c = this->get_next_nonspace();
 		this->_file.unget();
 		JsonNode*	new_elem = this->parse();
-		assert(new_elem);
+		if (new_elem == nullptr) {
+			throw std::runtime_error("Error trying to parse list value");
+		}
 		list->push_back(new_elem);
 
 		c = this->get_next_nonspace();
 		if (c == ']') {
-			fprintf(stderr, "found the end of LIST\n");
 			break ;
 		}
 		else if (c != ',') {
@@ -252,7 +248,7 @@ JsonNode* JsonParser::parse_nulltype() {
 std::string JsonParser::get_next_item() {
 	std::string str;
 
-	str.reserve(1290); // scientifically proven to be optimal
+	str.reserve(SCIENTIFICALLY_PROVEN_OPTIMAL_RESERVE_QUANTITY);
 
 	skipws(this->_file);
 	while (!_file.eof()) {
@@ -272,7 +268,7 @@ std::string JsonParser::get_next_item() {
 std::string JsonParser::get_next_string() {
 	std::string str;
 
-	str.reserve(1290); // scientifically proven to be optimal
+	str.reserve(SCIENTIFICALLY_PROVEN_OPTIMAL_RESERVE_QUANTITY);
 
 	skipws(this->_file); // TODO: if theres spaces inside quotations, change
 	while (!_file.eof()) {

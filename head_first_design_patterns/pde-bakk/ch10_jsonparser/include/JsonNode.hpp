@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 #include <iostream>
+#define SCIENTIFICALLY_PROVEN_OPTIMAL_RESERVE_QUANTITY 1290
 
 enum class e_type {
 	FLOAT,
