@@ -53,6 +53,7 @@ public:
 	int			returnInt();
 	bool		returnBool();
 
+
 	void	setObject(JSONObject *object);
 	void	setList(JSONList *list);
 	void	setString(std::string *s);
