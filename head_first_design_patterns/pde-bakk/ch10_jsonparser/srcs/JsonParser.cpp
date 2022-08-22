@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <cctype>
+#include <algorithm>
 
 e_type	token_to_type(e_token token) {
 	switch (token) {
@@ -38,13 +39,13 @@ JsonParser::~JsonParser() {
 
 JsonNode* JsonParser::parse() {
 	if (_file.eof()) {
-		std::cerr << "EOF reached\n";
 		return (nullptr);
 	}
-
 	e_token token = this->parse_token();
+	if (token == e_token::END_OF_FILE) {
+		return (nullptr);
+	}
 	e_type type = token_to_type(token);
-//	fprintf(stderr, "token = %s\n", tokenToString(token).c_str());
 	JsonNode*	node = nullptr;
 	switch (type) {
 		case (e_type::FLOAT):
@@ -67,7 +68,6 @@ JsonNode* JsonParser::parse() {
 			node = parse_nulltype();
 			break ;
 	}
-	assert(node != nullptr);
 	if (this->_root == nullptr)
 		this->_root = node;
 	return (node);
@@ -86,6 +86,8 @@ e_token JsonParser::parse_token() {
 	char c = get_next_char();
 
 	switch (c) {
+		case '\0':
+			return (e_token::END_OF_FILE);
 		case '{':
 			return (e_token::CURLY_OPEN);
 		case '}':
@@ -342,5 +344,7 @@ std::string	tokenToString(const e_token token) {
 			return ("e_token::BOOLEAN");
 		case e_token::NULL_TYPE:
 			return ("e_token::NULL_TYPE");
+		default:
+			return ("e_token::BAD");
 	}
 }

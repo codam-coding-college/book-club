@@ -193,5 +193,7 @@ std::string	typeToString(const e_type type) {
 			return ("e_type::BOOLEAN");
 		case e_type::NULL_TYPE:
 			return ("e_type::NULL_TYPE");
+		default:
+			return ("e_type::BAD");
 	}
 }

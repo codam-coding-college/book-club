@@ -19,7 +19,8 @@ enum class e_token
 	ARRAY_CLOSE,
 	COMMA,
 	BOOLEAN,
-	NULL_TYPE
+	NULL_TYPE,
+	END_OF_FILE
 };
 
 std::string	tokenToString(e_token token);
