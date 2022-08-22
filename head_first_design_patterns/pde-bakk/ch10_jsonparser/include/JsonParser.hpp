@@ -22,7 +22,7 @@ enum class e_token
 	NULL_TYPE
 };
 
-std::string	tokenToString(const e_token& token);
+std::string	tokenToString(e_token token);
 
 class JsonParser {
 	std::ifstream	_file;

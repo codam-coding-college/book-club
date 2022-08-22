@@ -10,6 +10,7 @@
 #include <string>
 #include <variant>
 #include <iostream>
+#define SCIENTIFICALLY_PROVEN_OPTIMAL_RESERVE_QUANTITY 1290
 
 enum class e_type {
 	FLOAT,
@@ -31,21 +32,27 @@ class JsonNode {
 		JSONList	*list;
 		JSONObject	*object;
 		std::string	*str;
-		float		f;
-		bool		b;
+		int			iValue;
+		float		fValue;
+		bool		bValue;
 	} values;
 	e_type type;
 
 public:
 	JsonNode();
-	JsonNode(e_type t);
+	explicit JsonNode(e_type t);
 	~JsonNode();
-	JSONObject	returnObject();
-	JSONList	returnList();
-	std::string	returnString();
+
+	e_type		getType() const;
+	std::string		getTypeAsString() const;
+
+	JSONObject& returnObject();
+	JSONList& returnList();
+	std::string& returnString();
 	float		returnFloat();
 	int			returnInt();
 	bool		returnBool();
+
 
 	void	setObject(JSONObject *object);
 	void	setList(JSONList *list);
@@ -55,9 +62,10 @@ public:
 	void	setBoolean(bool b);
 	void	setNull();
 
-	std::string	toString(int indentLevel) const;
+	std::string	toString(int indentLevel = 0) const;
 };
 
+std::string	typeToString(e_type type);
 std::ostream&	operator<<(std::ostream& o, const JsonNode& x);
 
 

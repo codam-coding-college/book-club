@@ -4,10 +4,8 @@
 
 #include "JsonParser.hpp"
 
-#include <utility>
 #include <iostream>
 #include <cctype>
-
 
 e_type	token_to_type(e_token token) {
 	switch (token) {
@@ -28,8 +26,10 @@ e_type	token_to_type(e_token token) {
 	}
 }
 
-JsonParser::JsonParser(const std::string& filename) : _file(filename), _root() {
-	this->_root = nullptr;
+JsonParser::JsonParser(const std::string& filename) : _file(filename), _root(nullptr) {
+	if (!_file) {
+		throw std::runtime_error("unable to open file '" + filename + "'");
+	}
 }
 
 JsonParser::~JsonParser() {
@@ -37,8 +37,6 @@ JsonParser::~JsonParser() {
 }
 
 JsonNode* JsonParser::parse() {
-//	char c;
-
 	if (_file.eof()) {
 		std::cerr << "EOF reached\n";
 		return (nullptr);
@@ -46,7 +44,7 @@ JsonNode* JsonParser::parse() {
 
 	e_token token = this->parse_token();
 	e_type type = token_to_type(token);
-	fprintf(stderr, "token = %s\n", tokenToString(token).c_str());
+//	fprintf(stderr, "token = %s\n", tokenToString(token).c_str());
 	JsonNode*	node = nullptr;
 	switch (type) {
 		case (e_type::FLOAT):
@@ -79,7 +77,7 @@ static e_token parse_int(char c) {
 	//TODO: check if float
 	if ((c >= '0' && c <= '9') || c == '+' || c == '-')
 		return (e_token::INTEGER);
-	std::string error("invalid token: ");
+	std::string error("Number: Invalid token: ");
 	error.push_back(c);
 	throw std::runtime_error(error);
 }
@@ -128,65 +126,63 @@ char JsonParser::get_next_char() {
 JsonNode* JsonParser::parse_object() {
 	JsonNode*	node = new JsonNode();
 	JSONObject*	object = new JSONObject();
-	bool completed = false;
-
-	if (_file.peek() == '{') {
-		std::cerr << "I thought I wouldn't see this opening bracket, but I guess here it is\n";
-	}
-	while (!completed && !_file.eof()) {
-		char c = this->get_next_nonspace();
-		if (c == '}') {
-			fprintf(stderr, "found the end of OBJECT\n");
-			completed = true;
-		}
-		else if (c == ',') {
-			fprintf(stderr, " found a comma in my object\n");
-		} else {
-			assert(c == '"');
-			std::string key = get_next_string();
-			std::cerr << "key = " << key << "\n";
-			char colon = _file.get();
-			assert(colon == ':');
-			JsonNode*	value = parse();
-			assert(value);
-			std::cerr << "value = " << value->toString(0) << "\n";
-			(*object)[key] = value;
-			std::cerr << "object now has " << object->size() << " elems\n";
-		}
-	}
 	node->setObject(object);
+
+	if (!_file.eof() && _file.peek() == '}') {
+		_file.get();
+		return (node);
+	}
+	while (!_file.eof()) {
+		char c = this->get_next_nonspace();
+
+		if (c != '"') {
+			throw std::runtime_error("Object key needs to be within double-quotes (\"key\")");
+		}
+		std::string key = get_next_string();
+		char colon = this->get_next_nonspace();
+		if (colon != ':')
+			throw std::runtime_error("Object key needs to be followed by a colon (:)");
+		JsonNode*	value = parse();
+		if (value == nullptr)
+			throw std::runtime_error("Error trying to parse object value");
+		(*object)[key] = value;
+		c = this->get_next_nonspace();
+		if (c == '}') {
+			break ;
+		} else if (c != ',') {
+			throw std::runtime_error("Object kv-pair wasn't followed by comma or closing bracket");
+		}
+	}
 	return (node);
 }
 
 JsonNode* JsonParser::parse_list() {
 	JsonNode*	node = new JsonNode();
 	JSONList*	list = new JSONList();
-	bool completed = false;
 
-	fprintf(stderr, "parsing LIST\n");
-	if (_file.peek() == '[') {
-		std::cerr << "I thought I wouldn't see this opening bracket, but I guess here it is\n";
-	}
-	while (!completed && !_file.eof()) {
-		char c = this->get_next_nonspace();
-		if (c == ']') {
-			fprintf(stderr, "found the end of LIST\n");
-			completed = true;
-		}
-		else if (c == ',') {
-			std::cerr << "found a comma in my list\n";
-		}
-		else {
-			this->_file.unget();
-			JsonNode*	new_elem = this->parse();
-			assert(new_elem);
-//			std::cerr << "LIST_element = " << new_elem->toString(2) << '\n';
-			list->push_back(new_elem);
-//			std::cerr << "list now has " << list->size() << " elems\n";
-//			std::cerr << "next elem is " << _file.peek() << "\n";
-		}
-	}
 	node->setList(list);
+	if (!_file.eof() && _file.peek() == ']') {
+		_file.get();
+		return (node);
+	}
+	while (!_file.eof()) {
+		char c = this->get_next_nonspace();
+		this->_file.unget();
+		JsonNode*	new_elem = this->parse();
+		if (new_elem == nullptr) {
+			throw std::runtime_error("Error trying to parse list value");
+		}
+		list->push_back(new_elem);
+
+		c = this->get_next_nonspace();
+		if (c == ']') {
+			break ;
+		}
+		else if (c != ',') {
+			throw std::runtime_error("List item wasn't followed by comma or closing bracket");
+		}
+	}
+
 	return (node);
 }
 
@@ -200,12 +196,29 @@ JsonNode* JsonParser::parse_string() {
 
 JsonNode* JsonParser::parse_number() {
 	const auto next = get_next_item();
-	const float value = std::stof(next);
-	JsonNode* node = new JsonNode();
-	if (next.find('.') == std::string::npos)
-		node->setInteger(static_cast<int>(value));
-	else
-		node->setFloat(value);
+	JsonNode* node = nullptr;
+	std::string::size_type pos;
+	const size_t amount_dots = std::count(next.begin(), next.end(), '.');
+
+	if (amount_dots > 1 || (amount_dots == 1 && next.back() == '.')) {
+		throw std::runtime_error("Invalid float: " + next);
+	}
+	if (amount_dots == 0) {
+		// int
+		int val = std::stoi(next, &pos);
+		if (pos != next.size()) {
+			throw std::runtime_error("Invalid integer: " + next);
+		}
+		node = new JsonNode();
+		node->setInteger(val);
+	} else {
+		float val = std::stof(next, &pos);
+		if (pos != next.size()) {
+			throw std::runtime_error("Invalid float: " + next);
+		}
+		node = new JsonNode();
+		node->setFloat(val);
+	}
 	return (node);
 }
 
@@ -235,13 +248,63 @@ JsonNode* JsonParser::parse_nulltype() {
 std::string JsonParser::get_next_item() {
 	std::string str;
 
-	str.reserve(1290); // scientifically proven to be optimal
+	str.reserve(SCIENTIFICALLY_PROVEN_OPTIMAL_RESERVE_QUANTITY);
 
 	skipws(this->_file);
 	while (!_file.eof()) {
 		char newchar = _file.get();
+		if (_file.eof())
+			break;
 		if (isspace(newchar) || newchar == ',' || newchar == '}' || newchar == ']') {
 			this->_file.unget();
+			break ;
+		} else if (newchar == '\0')
+			break ;
+		str += newchar;
+	}
+	return (str);
+}
+
+static char	unescape_character(const char c) {
+	switch (c) {
+		case ('b'):
+			return ('\b');
+		case ('f'):
+			return ('\f');
+		case ('n'):
+			return ('\n');
+		case ('t'):
+			return ('\t');
+		case ('r'):
+			return ('\r');
+		case ('\\'):
+			return ('\\');
+		case ('"'):
+			return ('\"');
+		default:
+			throw std::runtime_error(std::string("bad esacape sequence \\") + c);
+	}
+}
+
+std::string JsonParser::get_next_string() {
+	std::string str;
+
+	str.reserve(SCIENTIFICALLY_PROVEN_OPTIMAL_RESERVE_QUANTITY);
+
+	skipws(this->_file); // TODO: if theres spaces inside quotations, change
+	while (!_file.eof()) {
+		const char newchar = _file.get();
+		if (_file.eof())
+			break ;
+		if (newchar == '\\') {
+			const char escape = _file.get();
+			if (_file.eof()) {
+				throw std::runtime_error("Invalid string: Not allowed to end with a single backslash");
+			}
+			str += unescape_character(escape);
+			continue ;
+		}
+		if (newchar == '"') {
 			break ;
 		}
 		str += newchar;
@@ -249,33 +312,15 @@ std::string JsonParser::get_next_item() {
 	return (str);
 }
 
-std::string JsonParser::get_next_string() {
-	std::string str;
-
-	str.reserve(1290); // scientifically proven to be optimal
-
-	skipws(this->_file);
-	while (!_file.eof()) {
-		char newchar = _file.get();
-		if (newchar == '"' && (str.empty() || str.back() != '\\'))
-			break ;
-		str += newchar;
-	}
-	return (str);
-}
-
 char JsonParser::get_next_nonspace() {
 	char c = _file.get();
-	std::cerr << "got: " << c;
 	while (isspace(c) && !this->_file.eof()) {
 		c = _file.get();
-		std::cerr << c;
 	}
-	fprintf(stderr, "|last c = %c\n", c);
 	return (c);
 }
 
-std::string	tokenToString(const e_token& token) {
+std::string	tokenToString(const e_token token) {
 	switch (token) {
 		case e_token::CURLY_OPEN:
 			return ("e_token::CURLY_OPEN");
