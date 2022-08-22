@@ -36,8 +36,11 @@ JsonParser::JsonParser(const std::string& filename) : _file(filename), _root(nul
 JsonParser::~JsonParser() {
 
 }
+JsonNode* JsonParser::parseJSON() {
+	return (this->parse(true));
+}
 
-JsonNode* JsonParser::parse() {
+JsonNode* JsonParser::parse(const bool is_root = false) {
 	if (_file.eof()) {
 		return (nullptr);
 	}
@@ -68,8 +71,14 @@ JsonNode* JsonParser::parse() {
 			node = parse_nulltype();
 			break ;
 	}
-	if (this->_root == nullptr)
-		this->_root = node;
+	if (is_root) {
+		if (_file.eof() || this->get_next_nonspace() <= 0) {
+			this->_root = node;
+		} else {
+			delete node;
+			throw std::runtime_error("Error: found extraneous characters");
+		}
+	}
 	return (node);
 }
 
@@ -83,7 +92,7 @@ static e_token parse_int(char c) {
 }
 
 e_token JsonParser::parse_token() {
-	char c = get_next_char();
+	char c = get_next_nonspace();
 
 	switch (c) {
 		case '\0':
@@ -113,16 +122,6 @@ e_token JsonParser::parse_token() {
 			this->_file.unget();
 			return (parse_int(c));
 	}
-}
-
-char JsonParser::get_next_char() {
-	char c;
-	while (_file.get(c)) {
-		if (!isspace(c)) {
-			break ;
-		}
-	}
-	return (c);
 }
 
 JsonNode* JsonParser::parse_object() {

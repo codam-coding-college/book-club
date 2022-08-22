@@ -11,7 +11,7 @@ static std::string	TEST_FOLDER = "../tests/jsons/int/";
 TEST_CASE("42", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "42.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::INTEGER);
 		int integer = node->returnInt();
 		REQUIRE(integer == 42);
@@ -25,7 +25,7 @@ TEST_CASE("42", "[integer tests]") {
 TEST_CASE("minus 42", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "minus42.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::INTEGER);
 		int integer = node->returnInt();
 		REQUIRE(integer == -42);
@@ -39,7 +39,7 @@ TEST_CASE("minus 42", "[integer tests]") {
 TEST_CASE("zero", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "zero.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::INTEGER);
 		int integer = node->returnInt();
 		REQUIRE(integer == 0);
@@ -53,7 +53,7 @@ TEST_CASE("zero", "[integer tests]") {
 TEST_CASE("int_max", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "int_max.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::INTEGER);
 		int integer = node->returnInt();
 		REQUIRE(integer == INT_MAX);
@@ -67,7 +67,7 @@ TEST_CASE("int_max", "[integer tests]") {
 TEST_CASE("int_min", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "int_min.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::INTEGER);
 		int integer = node->returnInt();
 		REQUIRE(integer == INT_MIN);
@@ -81,7 +81,7 @@ TEST_CASE("int_min", "[integer tests]") {
 TEST_CASE("42g", "[integer tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "42g.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		std::cerr << "node = " << node->returnInt() << '\n';
 		(void)node;
 		REQUIRE(false);

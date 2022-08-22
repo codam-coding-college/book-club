@@ -10,7 +10,7 @@ static std::string	TEST_FOLDER = "../tests/jsons/string/";
 TEST_CASE("abi_string", "[string tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "abi.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::STRING);
 		std::string str = node->returnString();
 		std::cout << str << "\n";
@@ -25,7 +25,7 @@ TEST_CASE("abi_string", "[string tests]") {
 TEST_CASE("contains_spaces", "[string tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "contains_spaces.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::STRING);
 		std::string str = node->returnString();
 		std::cout << "contains_spaces.json: \"" << str << "\"\n";
@@ -40,7 +40,7 @@ TEST_CASE("contains_spaces", "[string tests]") {
 TEST_CASE("contains_tabs", "[string tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "contains_tabs.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::STRING);
 		std::string str = node->returnString();
 		std::cout << "contains_tabs.json: \"" << str << "\"\n";
@@ -55,7 +55,7 @@ TEST_CASE("contains_tabs", "[string tests]") {
 TEST_CASE("contains_newline", "[string tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "contains_newline.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::STRING);
 		std::string str = node->returnString();
 		std::cout << "contains_tabs.json: \"" << str << "\"\n";
@@ -70,7 +70,7 @@ TEST_CASE("contains_newline", "[string tests]") {
 TEST_CASE("escape_characters", "[string tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "escape_characters.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::STRING);
 		std::string str = node->returnString();
 		std::cout << "escape_characters.json: \"" << str << "\"\n";
@@ -85,7 +85,7 @@ TEST_CASE("escape_characters", "[string tests]") {
 TEST_CASE("invalid_backslash", "[string tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "invalid_backslash.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(0 == 1);
 		(void)node;
 	} catch(std::exception& e) {
@@ -98,7 +98,7 @@ TEST_CASE("invalid_backslash", "[string tests]") {
 TEST_CASE("invalid_doublequote", "[string tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "invalid_doublequote.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(0 == 1);
 		(void)node;
 	} catch(std::exception& e) {

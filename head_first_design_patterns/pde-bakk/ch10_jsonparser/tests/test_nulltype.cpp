@@ -10,7 +10,7 @@ static std::string	TEST_FOLDER = "../tests/jsons/nulltype/";
 TEST_CASE("null", "[nulltype tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "null.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::NULL_TYPE);
 	} catch(std::exception& e) {
 		// we shouldn't get here
@@ -22,7 +22,7 @@ TEST_CASE("null", "[nulltype tests]") {
 TEST_CASE("null_with_newline", "[nulltype tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "null_with_newline.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::NULL_TYPE);
 	} catch(std::exception& e) {
 		// we shouldn't get here
@@ -34,7 +34,7 @@ TEST_CASE("null_with_newline", "[nulltype tests]") {
 TEST_CASE("nul", "[nulltype tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "nul.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		REQUIRE(false);
 	} catch(std::exception& e) {
@@ -48,7 +48,7 @@ TEST_CASE("nul", "[nulltype tests]") {
 TEST_CASE("nil", "[nulltype tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "nil.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		REQUIRE(false);
 	} catch(std::exception& e) {
