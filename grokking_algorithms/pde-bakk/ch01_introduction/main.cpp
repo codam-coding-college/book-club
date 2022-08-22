@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <algorithm>
 #pragma execution_character_set("utf-8")
 
 template<typename T>
@@ -40,12 +41,13 @@ std::vector<std::string>	get_names(const std::string& filename, size_t max_names
 }
 
 int main(int argc, char **argv) {
-	std::string	filename = argv[1];
+	std::string	filename;
 	std::string find = "Nicholas";
 	if (argc == 1) {
 		std::cerr << "Please gib file\n";
 		return (EXIT_FAILURE);
 	}
+	filename = argv[1];
 	if (argv[2]) {
 		find = argv[2];
 	}
