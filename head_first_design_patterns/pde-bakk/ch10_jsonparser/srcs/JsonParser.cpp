@@ -95,6 +95,7 @@ e_token JsonParser::parse_token() {
 	char c = get_next_nonspace();
 
 	switch (c) {
+		case '\xff':
 		case '\0':
 			return (e_token::END_OF_FILE);
 		case '{':
