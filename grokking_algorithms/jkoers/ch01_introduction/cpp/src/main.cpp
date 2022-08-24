@@ -29,17 +29,19 @@ int main(int argc, char** argv) {
 	const std::string			   find = argv[2];
 	const std::vector<std::string> names = get_names(filename);
 
-	std::cout << "Searching " << find << " in array of size " << names.size() << "..." << std::endl;
+	std::cout << "Searching for " << find << " in array of size " << names.size() << "..." << std::endl;
 
 	const auto	  start = std::chrono::high_resolution_clock::now();
 	const ssize_t i = bin_search_i(names, find);
 	const auto	  end = std::chrono::high_resolution_clock::now();
 	const auto	  duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
+	std::cout << "Search took: " << (double)duration.count() / 1000.0 << " miliseconds" << std::endl;
+
 	if (i < 0)
-		std::cout << "Not found" << std::endl;
+		std::cout << find << " not found" << std::endl;
 	else
-		std::cout << "Found at position " << i << " in " << duration.count() << " microseconds" << std::endl;
+		std::cout << find << " found at position " << i << std::endl;
 
 	return (EXIT_SUCCESS);
 }

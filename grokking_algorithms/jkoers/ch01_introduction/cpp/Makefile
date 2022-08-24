@@ -1,11 +1,11 @@
 
-NAME      		= cpp
+NAME      		= a.out
 
 CC          	= clang++
 CFLAGS      	= -Wall -Wextra -Werror -O3 -std=c++17
 
 SRCEXT      	= cpp
-SRCDIR      	= src
+SRCDIR      	= .
 OBJEXT      	= o
 HEADEREXT		= hpp
 HEADERDIR		= include
