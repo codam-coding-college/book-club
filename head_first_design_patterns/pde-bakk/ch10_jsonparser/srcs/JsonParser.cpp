@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <cctype>
+#include <algorithm>
 
 e_type	token_to_type(e_token token) {
 	switch (token) {
@@ -35,16 +36,19 @@ JsonParser::JsonParser(const std::string& filename) : _file(filename), _root(nul
 JsonParser::~JsonParser() {
 
 }
+JsonNode* JsonParser::parseJSON() {
+	return (this->parse(true));
+}
 
-JsonNode* JsonParser::parse() {
+JsonNode* JsonParser::parse(const bool is_root = false) {
 	if (_file.eof()) {
-		std::cerr << "EOF reached\n";
 		return (nullptr);
 	}
-
 	e_token token = this->parse_token();
+	if (token == e_token::END_OF_FILE) {
+		return (nullptr);
+	}
 	e_type type = token_to_type(token);
-//	fprintf(stderr, "token = %s\n", tokenToString(token).c_str());
 	JsonNode*	node = nullptr;
 	switch (type) {
 		case (e_type::FLOAT):
@@ -67,9 +71,14 @@ JsonNode* JsonParser::parse() {
 			node = parse_nulltype();
 			break ;
 	}
-	assert(node != nullptr);
-	if (this->_root == nullptr)
-		this->_root = node;
+	if (is_root) {
+		if (_file.eof() || this->get_next_nonspace() <= 0) {
+			this->_root = node;
+		} else {
+			delete node;
+			throw std::runtime_error("Error: found extraneous characters");
+		}
+	}
 	return (node);
 }
 
@@ -83,9 +92,12 @@ static e_token parse_int(char c) {
 }
 
 e_token JsonParser::parse_token() {
-	char c = get_next_char();
+	char c = get_next_nonspace();
 
 	switch (c) {
+		case '\xff':
+		case '\0':
+			return (e_token::END_OF_FILE);
 		case '{':
 			return (e_token::CURLY_OPEN);
 		case '}':
@@ -111,16 +123,6 @@ e_token JsonParser::parse_token() {
 			this->_file.unget();
 			return (parse_int(c));
 	}
-}
-
-char JsonParser::get_next_char() {
-	char c;
-	while (_file.get(c)) {
-		if (!isspace(c)) {
-			break ;
-		}
-	}
-	return (c);
 }
 
 JsonNode* JsonParser::parse_object() {
@@ -342,5 +344,7 @@ std::string	tokenToString(const e_token token) {
 			return ("e_token::BOOLEAN");
 		case e_token::NULL_TYPE:
 			return ("e_token::NULL_TYPE");
+		default:
+			return ("e_token::BAD");
 	}
 }

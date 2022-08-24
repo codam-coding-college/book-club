@@ -21,7 +21,7 @@ Include(FetchContent)
 FetchContent_Declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v2.13.1
+        GIT_TAG        v2.13.9
 )
 file(GLOB test_srcs "tests/*.cpp")
 FetchContent_MakeAvailable(Catch2)

@@ -10,7 +10,7 @@ static std::string	TEST_FOLDER = "../tests/jsons/object/";
 TEST_CASE("test_object", "[object tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "simple.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::OBJECT);
 		auto& obj = node->returnObject();
 		REQUIRE(obj.size() == 2);

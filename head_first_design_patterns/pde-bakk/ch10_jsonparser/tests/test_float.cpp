@@ -16,7 +16,7 @@ static bool areSame(float a, float b) {
 TEST_CASE("pi", "[float tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "pi.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::FLOAT);
 		float pi = node->returnFloat();
 		std::cout << "pi = " << pi << "\n";
@@ -31,7 +31,7 @@ TEST_CASE("pi", "[float tests]") {
 TEST_CASE("two", "[float tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "two.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::FLOAT);
 		float pi = node->returnFloat();
 		REQUIRE(areSame(pi, 2.05));
@@ -45,7 +45,7 @@ TEST_CASE("two", "[float tests]") {
 TEST_CASE("double_dot", "[float tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "double_dot.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		std::cout << *node;
 		REQUIRE(false);
@@ -58,7 +58,7 @@ TEST_CASE("double_dot", "[float tests]") {
 
 	try {
 		JsonParser	parser(TEST_FOLDER + "double_dot_2.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		std::cout << *node;
 		REQUIRE(false);
@@ -73,7 +73,7 @@ TEST_CASE("double_dot", "[float tests]") {
 TEST_CASE("many_dots", "[float tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "many_dots.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		std::cout << *node;
 		REQUIRE(false);
@@ -87,7 +87,7 @@ TEST_CASE("many_dots", "[float tests]") {
 TEST_CASE("dot_before", "[float tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "dot_before.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		REQUIRE(false);
 	} catch(std::exception& e) {
@@ -100,7 +100,7 @@ TEST_CASE("dot_before", "[float tests]") {
 TEST_CASE("dot_after", "[float tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "dot_after.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		std::cout << typeToString(node->getType()) << ": " << *node;
 		REQUIRE(false);

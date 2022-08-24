@@ -19,7 +19,8 @@ enum class e_token
 	ARRAY_CLOSE,
 	COMMA,
 	BOOLEAN,
-	NULL_TYPE
+	NULL_TYPE,
+	END_OF_FILE
 };
 
 std::string	tokenToString(e_token token);
@@ -35,8 +36,10 @@ public:
 	JsonParser(const std::string& filename);
 	~JsonParser();
 
-	JsonNode* parse();
-	char	get_next_char();
+	JsonNode*	parseJSON();
+private:
+	JsonNode* parse(bool is_root);
+//	char	get_next_char();
 	e_token	parse_token();
 	char get_next_nonspace();
 	std::string	get_next_string();

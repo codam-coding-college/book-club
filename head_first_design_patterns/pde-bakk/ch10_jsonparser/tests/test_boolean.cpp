@@ -10,7 +10,7 @@ static std::string	TEST_FOLDER = "../tests/jsons/boolean/";
 TEST_CASE("test_boolean_true", "[boolean tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "true.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::BOOLEAN);
 		bool boolean = node->returnBool();
 		REQUIRE(boolean == true);
@@ -24,7 +24,7 @@ TEST_CASE("test_boolean_true", "[boolean tests]") {
 TEST_CASE("test_boolean_false", "[boolean tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "false.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::BOOLEAN);
 		bool boolean = node->returnBool();
 		REQUIRE(boolean == false);
@@ -39,7 +39,7 @@ TEST_CASE("test_boolean_false", "[boolean tests]") {
 TEST_CASE("test_boolean_tru", "[boolean tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "tru.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		(void)node;
 		REQUIRE(false);
 	} catch(std::exception& e) {

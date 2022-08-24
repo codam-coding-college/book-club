@@ -10,7 +10,7 @@ static std::string	TEST_FOLDER = "../tests/jsons/list/";
 TEST_CASE("list_small", "[list tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "list_small.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::LIST);
 		auto list = node->returnList();
 		REQUIRE(list.size() == 4);
@@ -29,7 +29,7 @@ TEST_CASE("list_small", "[list tests]") {
 TEST_CASE("list_empty", "[list tests]") {
 	try {
 		JsonParser	parser( TEST_FOLDER + "list_empty.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		REQUIRE(node->getType() == e_type::LIST);
 		auto list = node->returnList();
 		REQUIRE(list.size() == 0);
@@ -43,7 +43,7 @@ TEST_CASE("list_empty", "[list tests]") {
 TEST_CASE("list_complex", "[list tests]") {
 	try {
 		JsonParser	parser(TEST_FOLDER + "list_complex.json");
-		auto node = parser.parse();
+		auto node = parser.parseJSON();
 		std::cout << *node << "\n\n";
 		REQUIRE(node->getType() == e_type::LIST);
 		auto list = node->returnList();
