@@ -25,13 +25,12 @@ RESET = \x1b[0m
 CFLAGS = -Wall -Werror -Wextra -std=c++17
 ifdef DEBUG
  CFLAGS += -g3 -fsanitize=address
+else
+ CFLAGS += -Ofast
 endif
 SHELL := /bin/bash
 export SHELL
 export DEBUG
-ifdef SPEED
- CFLAGS += -Ofast
-endif
 
 all: $(NAME)
 

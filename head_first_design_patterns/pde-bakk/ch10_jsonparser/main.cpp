@@ -16,9 +16,9 @@ int main(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
 		try {
 			JsonParser	parser(argv[i]);
-			auto node = parser.parse();
+			auto node = parser.parseJSON();
 			if (node != nullptr)
-				std::cerr << "\n\n" << *node << "\n";
+				std::cerr << *node << "\n";
 		} catch (std::exception& e) {
 			std::cerr << "exception: " << e.what() << "\n";
 			ret |= EXIT_FAILURE;
