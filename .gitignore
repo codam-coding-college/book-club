@@ -44,3 +44,6 @@ DS_Store*
 
 # Python files
 __pycache__/
+
+# NodeJS
+node_modules/
