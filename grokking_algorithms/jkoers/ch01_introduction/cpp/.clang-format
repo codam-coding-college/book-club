@@ -1,0 +1,14 @@
+# See: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+BasedOnStyle: LLVM
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+ColumnLimit: 0
+AlignConsecutiveDeclarations: AcrossEmptyLines
+PointerAlignment: Left
+
+# Add newline before else
+BraceWrapping:
+  BeforeElse:      true
+BreakBeforeBraces: Custom
