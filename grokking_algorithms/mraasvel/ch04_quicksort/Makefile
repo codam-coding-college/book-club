@@ -1,23 +1,27 @@
 NAME := a.out
 CC := g++
-CFLAGS := -Wall -Wextra -Werror
+CXXFLAGS := -Wall -Wextra -Werror
+IFLAGS = -I$(IDIR)
 LFLAGS :=
 DFLAGS := -g
 
 BUILD_DIR = target
 EXEC = $(BUILD_DIR)/$(NAME)
 ODIR = $(BUILD_DIR)/obj
+DDIR = $(BUILD_DIR)/dep
 SDIR := src
+IDIR := src
 
 DEBUG_DIR := debug
 DBG := lldb
 ifdef DEBUG
-CFLAGS += $(DFLAGS)
+CXXFLAGS += $(DFLAGS)
 BUILD_DIR = $(DEBUG_DIR)
 endif
 
 SRC := $(shell find $(SDIR) -name "*.cpp")
 OBJ := $(patsubst $(SDIR)/%.cpp,$(ODIR)/$(SUBDIR)%.o,$(SRC))
+DEP := $(patsubst $(SDIR)/%.cpp,$(DDIR)/$(SUBDIR)%.d,$(SRC))
 
 all: build
 
@@ -36,9 +40,17 @@ $(EXEC): $(OBJ)
 
 $(OBJ): $(ODIR)/%.o: $(SDIR)/%.cpp Makefile
 	@mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CXXFLAGS) $(IFLAGS)
+
+$(DEP): $(DDIR)/%.d: $(SDIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $< -MM -MF $@ -MT $(ODIR)/$*.o $(CXXFLAGS) $(IFLAGS)
 
 clean:
 	@$(RM) -r $(BUILD_DIR)
 
-.PHONY: all run build debug
+re: clean
+	$(MAKE) build
+
+.PHONY: all run build debug re
+-include $(DEP)
