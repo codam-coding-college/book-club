@@ -1,7 +1,17 @@
 #include "exercise.hpp"
+#include "quicksort.hpp"
 #include <cassert>
 #include <array>
 #include <vector>
+#include <algorithm>
+
+int gcf(int x, int y) {
+	if (y == 0) {
+		return x;
+	} else {
+		return gcf(y, x % y);
+	}
+}
 
 void test_sum() {
 	std::array<int, 3> array { 2, 4, 6 };
@@ -25,7 +35,12 @@ void test_binary_search() {
 	assert(*find == 3);
 	auto fail = grokking::binary_search(v.begin(), v.end(), 42);
 	assert(fail == v.end());
+}
 
+void test_quicksort() {
+	std::vector<int> v { 5, 3, 1, 4, -5, 42 };
+	grokking::quicksort(v.begin(), v.end());
+	assert(std::is_sorted(v.begin(), v.end()));
 }
 
 int main() {
@@ -33,5 +48,6 @@ int main() {
 	test_len();
 	test_max();
 	test_binary_search();
+	test_quicksort();
 	return 0;
 }

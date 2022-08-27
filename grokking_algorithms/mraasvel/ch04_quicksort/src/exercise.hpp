@@ -44,10 +44,10 @@ RandomIter binary_search(RandomIter begin, RandomIter end, const T& target) {
 	RandomIter midpoint = begin + (end - begin) / 2;
 	if (*midpoint < target) {
 		RandomIter new_begin = midpoint + 1;
-		return binary_search(new_begin, end, target);
+		return grokking::binary_search(new_begin, end, target);
 	} else if (target < *midpoint) {
 		RandomIter new_end = midpoint;
-		return binary_search(begin, new_end, target);
+		return grokking::binary_search(begin, new_end, target);
 	} else {
 		return midpoint;
 	}

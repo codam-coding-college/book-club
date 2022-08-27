@@ -1,6 +1,7 @@
 NAME := a.out
 CC := g++
-CXXFLAGS := -Wall -Wextra -Werror
+CXXFLAGS = -Wall -Wextra -Werror
+CXXFLAGS += -Wno-unused-parameter -Wno-unused
 IFLAGS = -I$(IDIR)
 LFLAGS :=
 DFLAGS := -g
