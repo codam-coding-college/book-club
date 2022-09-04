@@ -57,6 +57,22 @@ void test_inversion_count_array() {
 	assert(grokking::inversion_count(v.begin(), v.end()) == expected);
 }
 
+void test_num_rotations() {
+	{
+		std::vector<int> v { 8, 9, 10, 2, 5, 6 };
+		assert(grokking::num_rotations(v) == 3);
+	}
+	{
+		std::vector<int> v { 2, 5, 6, 8, 9, 10 };
+		assert(grokking::num_rotations(v) == 0);
+	}
+	{
+		std::vector<int> v { 5, 6, 8, 9, 10, 2 };
+		assert(grokking::num_rotations(v) == 1);
+	}
+
+}
+
 int main() {
 	test_sum();
 	test_len();
@@ -65,6 +81,7 @@ int main() {
 	test_quicksort();
 	test_quicksort_it();
 	test_inversion_count_array();
+	test_num_rotations();
 	test_math();
 	return 0;
 }

@@ -2,6 +2,8 @@
 
 #include <vector>
 
+// https://www.techiedelight.com/inversion-count-array/
+
 namespace grokking {
 
 	namespace _detail_ {
