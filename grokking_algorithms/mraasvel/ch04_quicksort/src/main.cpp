@@ -1,7 +1,7 @@
 #include <iostream>
 #include "exercise.hpp"
 #include "quicksort.hpp"
-#include "implementations/iterative_quicksort.hpp"
+#include "implementations/amalgamated.hpp"
 #include "math.hpp"
 #include <cassert>
 #include <array>
@@ -51,6 +51,12 @@ void test_math() {
 	assert(grokking::consecutive_powers_sum(3, 3) == 40);
 }
 
+void test_inversion_count_array() {
+	std::vector<int> v { 42, 5, 6, 56, 1 };
+	int expected = 6;
+	assert(grokking::inversion_count(v.begin(), v.end()) == expected);
+}
+
 int main() {
 	test_sum();
 	test_len();
@@ -58,6 +64,7 @@ int main() {
 	test_binary_search();
 	test_quicksort();
 	test_quicksort_it();
+	test_inversion_count_array();
 	test_math();
 	return 0;
 }
