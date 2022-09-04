@@ -1,17 +1,10 @@
 #include "exercise.hpp"
 #include "quicksort.hpp"
+#include "math.hpp"
 #include <cassert>
 #include <array>
 #include <vector>
 #include <algorithm>
-
-int gcf(int x, int y) {
-	if (y == 0) {
-		return x;
-	} else {
-		return gcf(y, x % y);
-	}
-}
 
 void test_sum() {
 	std::array<int, 3> array { 2, 4, 6 };
@@ -43,11 +36,19 @@ void test_quicksort() {
 	assert(std::is_sorted(v.begin(), v.end()));
 }
 
+void test_math() {
+	assert(grokking::power(2, 4) == 16);
+	assert(grokking::gcd(2 * 2 * 5 * 7 * 13, 2 * 5 * 13) == 2 * 5 * 13);
+	assert(grokking::consecutive_powers_sum(2, 5) == 63);
+	assert(grokking::consecutive_powers_sum(3, 3) == 40);
+}
+
 int main() {
 	test_sum();
 	test_len();
 	test_max();
 	test_binary_search();
 	test_quicksort();
+	test_math();
 	return 0;
 }

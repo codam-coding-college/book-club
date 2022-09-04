@@ -37,7 +37,7 @@ build: $(EXEC)
 
 $(EXEC): $(OBJ)
 	@mkdir -p $(@D)
-	$(CC) -o $@ $< $(LFLAGS)
+	$(CC) -o $@ $^ $(LFLAGS)
 
 $(OBJ): $(ODIR)/%.o: $(SDIR)/%.cpp Makefile
 	@mkdir -p $(@D)
