@@ -279,12 +279,15 @@ static char	unescape_character(const char c) {
 			return ('\t');
 		case ('r'):
 			return ('\r');
+        case ('/'):
 		case ('\\'):
-			return ('\\');
-		case ('"'):
-			return ('\"');
+        case ('"'):
+            return (c);
+        case ('U'):
+        case ('u'):
+            throw std::runtime_error("Error. Not handling \\u. Sorry not sorry");
 		default:
-			throw std::runtime_error(std::string("bad esacape sequence \\") + c);
+			throw std::runtime_error(std::string("Bad escape sequence \\") + c);
 	}
 }
 
