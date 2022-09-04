@@ -70,7 +70,17 @@ void test_num_rotations() {
 		std::vector<int> v { 5, 6, 8, 9, 10, 2 };
 		assert(grokking::num_rotations(v) == 1);
 	}
+}
 
+void test_lcp() {
+	std::vector<std::string> v {
+		"techie delight",
+		"tech",
+		"techie",
+		"technology",
+		"technical"
+	};
+	assert(grokking::lcp(v) == "tech");
 }
 
 int main() {
@@ -83,5 +93,6 @@ int main() {
 	test_inversion_count_array();
 	test_num_rotations();
 	test_math();
+	test_lcp();
 	return 0;
 }
