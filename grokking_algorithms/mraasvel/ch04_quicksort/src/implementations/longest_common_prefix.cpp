@@ -19,6 +19,7 @@ namespace grokking {
 
 	// divide and conquer
 	// can be optimized for space complexity by returning indices
+	// still O(n * m) where n is the number of strings and m is the size of the largest prefix found
 	std::string lcp(const std::vector<std::string>& v, int start, int end) {
 		if (end - start == 0) {
 			return "";

@@ -83,6 +83,13 @@ void test_lcp() {
 	assert(grokking::lcp(v) == "tech");
 }
 
+void test_unbounded_binary_search() {
+	auto f = [] (int x) -> int {
+		return 3 * x - 100;
+	};
+	assert(grokking::unbounded_binary_search(f) == 34);
+}
+
 int main() {
 	test_sum();
 	test_len();
@@ -94,5 +101,6 @@ int main() {
 	test_num_rotations();
 	test_math();
 	test_lcp();
+	test_unbounded_binary_search();
 	return 0;
 }

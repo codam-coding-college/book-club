@@ -7,4 +7,5 @@
 namespace grokking {
 int num_rotations(const std::vector<int>& v);
 std::string lcp(const std::vector<std::string>& v);
+int unbounded_binary_search(std::function<int(int)> f);
 }
