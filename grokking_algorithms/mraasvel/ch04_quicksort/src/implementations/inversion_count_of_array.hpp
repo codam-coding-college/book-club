@@ -56,7 +56,7 @@ int inversion_count(RandomIter begin, RandomIter end) {
 	// return count;
 
 	// O(N log N) solution
-	// Essentially merge sort but we cound the inversions while merging
+	// Essentially merge sort but we count the inversions while merging
 	auto distance = std::distance(begin, end);
 	if (distance <= 1) {
 		return 0;

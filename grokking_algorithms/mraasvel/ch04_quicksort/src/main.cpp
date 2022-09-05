@@ -102,5 +102,7 @@ int main() {
 	test_math();
 	test_lcp();
 	test_unbounded_binary_search();
+	grokking::test_powers();
+	grokking::test_find_missing_term();
 	return 0;
 }

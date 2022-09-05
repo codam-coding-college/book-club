@@ -6,7 +6,6 @@ namespace grokking {
 	namespace _detail_ {
 
 	int bounded_binary_search(int start, int end, std::function<int(int)> f) {
-		std::cout << start << ", " << end << '\n';
 		int lowest = end;
 		while (start < end) {
 			int midpoint = (start + end) / 2;
