@@ -2,6 +2,7 @@
 
 #include "inversion_count_of_array.hpp"
 #include "iterative_quicksort.hpp"
+#include "introsort.hpp"
 #include <vector>
 
 namespace grokking {

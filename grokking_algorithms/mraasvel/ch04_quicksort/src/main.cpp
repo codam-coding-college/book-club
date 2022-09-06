@@ -90,6 +90,12 @@ void test_unbounded_binary_search() {
 	assert(grokking::unbounded_binary_search(f) == 34);
 }
 
+void test_introsort() {
+	std::vector<int> v { 5, 3, 1, 4, -5, 42 };
+	grokking::introsort(v.begin(), v.end());
+	assert(std::is_sorted(v.begin(), v.end()));
+}
+
 int main() {
 	test_sum();
 	test_len();
@@ -104,5 +110,6 @@ int main() {
 	test_unbounded_binary_search();
 	grokking::test_powers();
 	grokking::test_find_missing_term();
+	test_introsort();
 	return 0;
 }
