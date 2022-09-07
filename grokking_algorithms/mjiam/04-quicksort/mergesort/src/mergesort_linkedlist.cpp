@@ -1,11 +1,18 @@
 #include <iostream>
 
-typedef struct node {
-  int val;
-  struct node *next;
-} t_node;
+using namespace std;
 
+// Problem:
+// Given a linked list, sort it using the merge sort algorithm.
+
+typedef struct node {
+  int         val;
+  struct node *next;
+}             t_node;
+
+// Merges the 2 sorted sublists.
 t_node *mergeList(t_node *nodes_a, t_node *nodes_b) {
+  // base cases
   if (!nodes_a)
     return (nodes_b);
   if (!nodes_b)
@@ -21,18 +28,19 @@ t_node *mergeList(t_node *nodes_a, t_node *nodes_b) {
   }
 }
 
-// Use tortoise & hare method to find mid point.
+// Use tortoise & hare method to find mid point and
+// split the list into 2 sublists.
 t_node *splitList(t_node *nodes_a) {
-  t_node *fast;
-  t_node *slow;
   t_node *mid;
+  t_node *fast = nodes_a;
+  t_node *slow = nodes_a;
 
-  fast = nodes_a;
-  slow = nodes_a;
   while (fast->next && fast->next->next) {
     fast = fast->next->next;
     slow = slow->next;
   }
+  // slow is the element before the midpoint, so we
+  // split the list at that point.
   mid = slow->next;
   slow->next = NULL;
   return mid;
@@ -45,19 +53,23 @@ t_node *mergeSort(t_node *nodes) {
   if (!nodes || !nodes->next)
     return (nodes);
 
+  // split larger list into 2 sublists
   nodes_b = splitList(nodes);
 
+  // recursively sort sublists
   nodes = mergeSort(nodes);
   nodes_b = mergeSort(nodes_b);
+
+  // merge the 2 sorted sublists
   return (mergeList(nodes, nodes_b));
 }
 
 void printList(t_node *node) {
   while (node != NULL) {
-    std::cout << node->val << " ";
+    cout << node->val << " ";
     node = node->next;
   }
-  std::cout << std::endl;
+  cout << endl;
 }
 
 void pushNode(t_node **nodes, int val) {
@@ -76,10 +88,10 @@ int main() {
     pushNode(&nodes, keys[i]);
   }
   
-  std::cout << "Before sorting: ";
+  cout << "Before sorting: ";
   printList(nodes);
   
   nodes = mergeSort(nodes);
-  std::cout << "After sorting: ";
+  cout << "After sorting: ";
   printList(nodes);
 }
