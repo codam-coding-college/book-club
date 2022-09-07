@@ -57,6 +57,12 @@ int main() {
   vector<int> nums = {2, -4, 1, 9, -6, 7, -3}; // 11
   // vector<int> nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4}; // 6
 
+  cout << "Array input: ";
+  for (size_t i = 0; i < nums.size(); i++) {
+    cout << nums[i] << " ";
+  }
+  cout << endl;
+  
   int max_sum = findMaxSum(nums, 0, nums.size() - 1);
   cout << "Max sum is: " << max_sum << endl;
 }
