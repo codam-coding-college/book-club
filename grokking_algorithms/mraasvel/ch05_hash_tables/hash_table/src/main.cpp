@@ -4,27 +4,31 @@
 
 struct StringHash {
 	size_t operator()(const std::string& key) const {
-		return key.size();
+		size_t hash = 7;
+		for (unsigned char ch: key) {
+			hash = hash * 31 + ch;
+		}
+		return hash;
 	}
 };
 
 int main() {
 	grokking::HashSet<std::string, StringHash> set;
 
-	assert(set.find("1234") == false);
+	assert(set.find("json") == false);
 
-	set.insert("1234");
-	set.insert("2345");
-	set.insert("234");
-	set.insert("");
-	set.insert("1098234123401230948");
-	set.insert("1234567890");
+	set.insert("hashtable");
+	set.insert("maarten");
+	set.insert("json");
+	set.insert("hashset");
+	set.insert("rust");
+	set.insert("parser");
 
-	assert(set.find("1234") == true);
-	assert(set.find("2345") == true);
+	assert(set.find("rust") == true);
+	assert(set.find("json") == true);
 
-	set.erase("1234");
-	assert(set.find("1234") == false);
+	set.erase("json");
+	assert(set.find("json") == false);
 	set.print();
 	return 0;
 }
