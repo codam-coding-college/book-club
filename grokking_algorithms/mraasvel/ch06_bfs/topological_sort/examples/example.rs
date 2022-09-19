@@ -7,10 +7,10 @@ use topological_sort::Node;
 fn main() {
     let graph = HashMap::from_iter(
         [
-            ("a", vec!["b", "c"]),
-            ("b", vec!["c"]),
-            ("c", vec![]),
-            ("d", vec!["a", "b"]),
+            ("get dressed", vec!["wake up"]),
+            ("brush teeth", vec!["wake up"]),
+            ("wake up", vec![]),
+            ("go to work", vec!["get dressed", "brush teeth"]),
         ]
         .into_iter()
         .map(|(key, connections)| {
@@ -21,9 +21,8 @@ fn main() {
 
     let result = topological_sort(&graph);
     dbg!(&result);
-    // D is first because it depends on nothing (empty connections)
-    // A is second because its only dependency is D
-    // B is third because its dependencies (D and A) are before and C is its dependent
-    // C is last because it has no dependents, only dependencies
-    assert_eq!(result, vec!["d", "a", "b", "c"]);
+    assert_eq!(result[0], "wake up");
+    assert!(result[1] == "brush teeth" || result[1] == "get dressed");
+    assert!(result[2] == "brush teeth" || result[2] == "get dressed");
+    assert_eq!(result[3], "go to work");
 }
