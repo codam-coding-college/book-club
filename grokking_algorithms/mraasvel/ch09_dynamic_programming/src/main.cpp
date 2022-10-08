@@ -62,7 +62,7 @@ struct BacktraceResult {
 	std::unordered_set<int> part_of_lcs_b;
 };
 
-static BacktraceResult backtrace(const std::vector<std::string>& a, const std::vector<std::string>& b, const Matrix& lcs) {
+static BacktraceResult backtrack(const std::vector<std::string>& a, const std::vector<std::string>& b, const Matrix& lcs) {
 	BacktraceResult result;
 	int row = a.size() - 1;
 	int col = b.size() - 1;
@@ -109,19 +109,40 @@ static void print_diff(const std::vector<std::string>& a, const std::vector<std:
 		} else if (j == b.size()) {
 			print_delete(a[i]);
 			i++;
+		} else if (bt.part_of_lcs_a.count(i) == 0) {
+			print_delete(a[i]);
+			i++;
+		} else if (bt.part_of_lcs_b.count(j) == 0) {
+			print_add(b[j]);
+			j++;
 		} else {
-			if (bt.part_of_lcs_a.count(i) == 0) {
-				print_delete(a[i]);
-				i++;
-			} else if (bt.part_of_lcs_b.count(j) == 0) {
-				print_add(b[j]);
-				j++;
-			} else {
-				print_no_change(a[i]);
-				i++;
-				j++;
-			}
+			print_no_change(a[i]);
+			i++;
+			j++;
 		}
+	}
+}
+
+static void print_diff_backtrack(const std::vector<std::string>& a, const std::vector<std::string>& b, const Matrix& lcs, int i, int j) {
+	int left = lcs.left(i, j, -1);
+	int top = lcs.top(i, j, -1);
+	if (i < 0 && j < 0) {
+		return;
+	} else if (i < 0) {
+		print_diff_backtrack(a, b, lcs, i, j-1);
+		print_add(b[j]);
+	} else if (j < 0) {
+		print_diff_backtrack(a, b, lcs, i-1, j);
+		print_delete(a[i]);
+	} else if (a[i] == b[j]) {
+		print_diff_backtrack(a, b, lcs, i-1, j-1);
+		print_no_change(a[i]);
+	} else if (left >= top) {
+		print_diff_backtrack(a, b, lcs, i, j-1);
+		print_add(b[j]);
+	} else {
+		print_diff_backtrack(a, b, lcs, i-1, j);
+		print_delete(a[i]);
 	}
 }
 
@@ -133,11 +154,7 @@ int main(int argc, char* argv[]) {
 	argc--; argv++;
 	auto original = read_lines(argv[0]);
 	auto latest = read_lines(argv[1]);
-	// dbg("original", original);
-	// dbg("latest", latest);
 	Matrix matrix = longest_common_subsequence(original, latest);
-	// matrix.debug(std::cout);
-	auto bt = backtrace(original, latest, matrix);
-	print_diff(original, latest, bt);
+	print_diff_backtrack(original, latest, matrix, original.size() - 1, latest.size() - 1);
 	return 0;
 }
