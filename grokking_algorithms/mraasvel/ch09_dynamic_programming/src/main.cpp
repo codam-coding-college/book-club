@@ -69,13 +69,13 @@ static BacktraceResult backtrace(const std::vector<std::string>& a, const std::v
 	while (row >= 0 && col >= 0) {
 		int cur = lcs.get(row, col);
 		if (cur == lcs.left(row, col, -1)) {
-			std::cout << "LEFT\n";
 			col -= 1;
 		} else if (cur == lcs.top(row, col, -1)) {
-			std::cout << "UP\n";
 			row -= 1;
 		} else {
-			std::cout << "DIAG\n";
+			if (row == 0 && col == 0 && cur == 0) {
+				break;
+			}
 			result.part_of_lcs_a.insert(row);
 			result.part_of_lcs_b.insert(col);
 			col -= 1;
@@ -85,24 +85,39 @@ static BacktraceResult backtrace(const std::vector<std::string>& a, const std::v
 	return result;
 }
 
+#define COLOR_RED "\033[1;31m"
+#define COLOR_GREEN "\033[1;32m"
+#define COLOR_RESET "\033[0m"
+
+static void print_no_change(const std::string& line) {
+std::cout << "  " << line << '\n';
+}
+static void print_delete(const std::string& line) {
+	std::cout << COLOR_RED << "- " << line << COLOR_RESET << '\n';
+}
+static void print_add(const std::string& line) {
+	std::cout << COLOR_GREEN << "+ " << line << COLOR_RESET << '\n';
+}
+
 static void print_diff(const std::vector<std::string>& a, const std::vector<std::string>& b, const BacktraceResult& bt) {
 	int i = 0;
 	int j = 0;
 	while (i < a.size() || j < b.size()) {
 		if (i == a.size()) {
-			std::cout << "+ " << b[j] << '\n';
+			print_add(b[j]);
 			j++;
 		} else if (j == b.size()) {
-			std::cout << "- " << a[i] << '\n';
+			print_delete(a[i]);
 			i++;
 		} else {
 			if (bt.part_of_lcs_a.count(i) == 0) {
-				std::cout << "- " << a[i] << '\n';
+				print_delete(a[i]);
 				i++;
 			} else if (bt.part_of_lcs_b.count(j) == 0) {
-				std::cout << "+ " << b[j] << '\n';
+				print_add(b[j]);
 				j++;
 			} else {
+				print_no_change(a[i]);
 				i++;
 				j++;
 			}
@@ -118,10 +133,10 @@ int main(int argc, char* argv[]) {
 	argc--; argv++;
 	auto original = read_lines(argv[0]);
 	auto latest = read_lines(argv[1]);
-	dbg("original", original);
-	dbg("latest", latest);
+	// dbg("original", original);
+	// dbg("latest", latest);
 	Matrix matrix = longest_common_subsequence(original, latest);
-	matrix.debug(std::cout);
+	// matrix.debug(std::cout);
 	auto bt = backtrace(original, latest, matrix);
 	print_diff(original, latest, bt);
 	return 0;
