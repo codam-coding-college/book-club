@@ -21,6 +21,7 @@ pub enum Json {
 enum State {
     New(u8),
     Object((HashMap<String, Box<Json>>, String)),
+    #[allow(clippy::vec_box)]
     Array(Vec<Box<Json>>),
 }
 
@@ -75,7 +76,7 @@ impl<R: BufRead> Parser<R> {
     fn parse_number(&mut self) -> anyhow::Result<()> {
         let mut num = String::new();
         num.push(self.byte as char);
-        while let Some(ch) = self.reader.next() {
+        for ch in self.reader.by_ref() {
             let ch = ch?;
             if !ch.is_ascii_digit() {
                 break;
@@ -112,29 +113,29 @@ impl<R: BufRead> Parser<R> {
         Ok(())
     }
 
-	fn next_escaped_char(&mut self) -> anyhow::Result<u8> {
-		let next = self.next()?;
-		match next {
-			b'"' | b'\\' => Ok(next),
-			b'b' => Ok(0x08), // \b
-			b'f' => Ok(0x0C), // \f
-			b'n' => Ok(b'\n'),
-			b'r' => Ok(b'\r'),
-			b't' => Ok(b'\t'),
-			b'u' => anyhow::bail!("unicode not implemented"),
-			ch => anyhow::bail!("unknown escaped character: {ch}"),
-		}
-	}
+    fn next_escaped_char(&mut self) -> anyhow::Result<u8> {
+        let next = self.next()?;
+        match next {
+            b'"' | b'\\' => Ok(next),
+            b'b' => Ok(0x08), // \b
+            b'f' => Ok(0x0C), // \f
+            b'n' => Ok(b'\n'),
+            b'r' => Ok(b'\r'),
+            b't' => Ok(b'\t'),
+            b'u' => anyhow::bail!("unicode not implemented"),
+            ch => anyhow::bail!("unknown escaped character: {ch}"),
+        }
+    }
 
     fn parse_string(&mut self) -> anyhow::Result<()> {
         let mut result = Vec::new();
         while let Some(ch) = self.reader.next() {
             let ch = ch?;
-			match ch {
-				b'"' => break,
-				b'\\' => result.push(self.next_escaped_char()?),
-				ch => result.push(ch),
-			}
+            match ch {
+                b'"' => break,
+                b'\\' => result.push(self.next_escaped_char()?),
+                ch => result.push(ch),
+            }
         }
         self.json = Some(Json::String(String::from_utf8(result)?));
         Ok(())
@@ -209,6 +210,7 @@ impl<R: BufRead> Parser<R> {
         Ok(())
     }
 
+    #[allow(clippy::vec_box)]
     fn parse_array_continued(&mut self, mut array: Vec<Box<Json>>) -> anyhow::Result<()> {
         array.push(Box::new(self.json.take().unwrap()));
         match self.next_skip_ws()? {
@@ -223,21 +225,23 @@ impl<R: BufRead> Parser<R> {
         Ok(())
     }
 
-	fn next(&mut self) -> anyhow::Result<u8> {
-		self.byte = self.reader.next().ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
-		Ok(self.byte)
-	}
+    fn next(&mut self) -> anyhow::Result<u8> {
+        self.byte = self
+            .reader
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
+        Ok(self.byte)
+    }
 
     fn next_skip_ws(&mut self) -> anyhow::Result<u8> {
         self.byte = self
             .reader
             .by_ref()
-            .skip_while(|ch| {
+            .find(|ch| {
                 ch.as_ref()
-                    .map(|b| b.is_ascii_whitespace())
+                    .map(|b| !b.is_ascii_whitespace())
                     .unwrap_or(false)
             })
-            .next()
             .ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
         Ok(self.byte)
     }

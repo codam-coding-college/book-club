@@ -1,5 +1,5 @@
 fn main() -> anyhow::Result<()> {
-    match std::env::args().skip(1).next() {
+    match std::env::args().nth(1) {
         Some(filename) => {
             let file = std::fs::File::open(&filename)?;
             let reader = std::io::BufReader::new(file);
