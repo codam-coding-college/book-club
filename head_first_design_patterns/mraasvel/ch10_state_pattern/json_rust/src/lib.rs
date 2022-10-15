@@ -1,13 +1,14 @@
 use std::{
     collections::HashMap,
-    io::{BufRead, Read, Bytes},
+    io::{BufRead, Bytes},
+    iter::Peekable,
 };
 
 pub enum JsonNumber {
     Integer(i32),
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Json {
     Number(i32),
     String(String),
@@ -18,69 +19,208 @@ pub enum Json {
 }
 
 enum State {
-	New,
-	Object((Json, String)),
-	Array(Json),
+    New(u8),
+    Object((HashMap<String, Box<Json>>, String)),
+    Array(Vec<Box<Json>>),
 }
 
 pub struct Parser<R: BufRead> {
-    reader: Bytes<R>,
+    reader: Peekable<Bytes<R>>,
     json: Option<Json>,
-	stack: Vec<State>,
+    byte: u8,
+    stack: Vec<State>,
 }
 
 impl<R: BufRead> Parser<R> {
     pub fn new(reader: R) -> Self {
         Self {
-            reader: reader.bytes(),
+            reader: reader.bytes().peekable(),
             json: None,
-			stack: Vec::new(),
+            byte: 0,
+            stack: Vec::new(),
         }
     }
 
     pub fn parse(&mut self) -> anyhow::Result<()> {
-		self.stack.push(State::New);
-		while let Some(top) = self.stack.pop() {
-			match top {
-				State::New => self.new_state()?,
-				State::Object((object, key)) => {
-					if let Json::Object(mut object) = object {
-						object.insert(key, Box::new(self.json.take().unwrap()));
-					} else {
-						panic!("expected object state");
-					}
-				}
-				State::Array(array) => {
-					if let Json::Array(mut array) = array {
-						array.push(Box::new(self.json.take().unwrap()));
-					} else {
-						panic!("expected array state");
-					}
-				}
-			}
-		}
+        let first = self.next_skip_ws()?;
+        self.stack.push(State::New(first));
+        while let Some(top) = self.stack.pop() {
+            match top {
+                State::New(next) => self.new_state(next)?,
+                State::Object((object, key)) => {
+                    self.parse_object_continued(object, key)?;
+                }
+                State::Array(array) => {
+                    self.parse_array_continued(array)?;
+                }
+            }
+        }
         Ok(())
     }
 
-	fn new_state(&mut self) -> anyhow::Result<()> {
-		assert!(self.json.is_none());
-		let ch = self.reader.next().ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
-		match ch {
-			b'-' | b'0' ..= b'9' => self.parse_number()?,
-			b'{' => {}
-			b'[' => {}
-			b'"' => {}
-			b'n' => {}
-			b't' | b'f' => {}
-			_ => {}
-		}
-		Ok(())
-	}
+    fn new_state(&mut self, byte: u8) -> anyhow::Result<()> {
+        assert!(self.json.is_none());
+        match byte {
+            b'-' | b'0'..=b'9' => self.parse_number()?,
+            b'n' => self.parse_null()?,
+            b't' | b'f' => self.parse_bool()?,
+            b'"' => self.parse_string()?,
+            b'{' => self.parse_object()?,
+            b'[' => self.parse_array()?,
+            _ => {}
+        }
+        Ok(())
+    }
 
-	fn parse_number(&mut self) -> anyhow::Result<()> {
+    fn parse_number(&mut self) -> anyhow::Result<()> {
+        let mut num = String::new();
+        num.push(self.byte as char);
+        while let Some(ch) = self.reader.next() {
+            let ch = ch?;
+            if !ch.is_ascii_digit() {
+                break;
+            }
+            num.push(ch as char);
+        }
+        self.json = Some(Json::Number(num.parse()?));
+        Ok(())
+    }
 
-		Ok(())
-	}
+    fn parse_expected(&mut self, expected: &[u8]) -> anyhow::Result<()> {
+        for &ch in expected {
+            if Some(ch) != self.reader.next().transpose()? {
+                anyhow::bail!("expected {ch}");
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_null(&mut self) -> anyhow::Result<()> {
+        self.parse_expected(b"ull")?;
+        self.json = Some(Json::Null);
+        Ok(())
+    }
+
+    fn parse_bool(&mut self) -> anyhow::Result<()> {
+        if self.byte == b't' {
+            self.parse_expected(b"rue")?;
+            self.json = Some(Json::Boolean(true));
+        } else {
+            self.parse_expected(b"alse")?;
+            self.json = Some(Json::Boolean(false));
+        }
+        Ok(())
+    }
+
+    fn parse_string(&mut self) -> anyhow::Result<()> {
+        let mut result = Vec::new();
+        while let Some(ch) = self.reader.next() {
+            let ch = ch?;
+            if ch == b'"' {
+                break;
+            }
+            result.push(ch);
+        }
+        self.json = Some(Json::String(String::from_utf8(result)?));
+        Ok(())
+    }
+
+    fn parse_object(&mut self) -> anyhow::Result<()> {
+        let object = HashMap::new();
+        let next = self.next_skip_ws()?;
+        match next {
+            b'"' => {
+                self.parse_object_key(object)?;
+            }
+            b'}' => {
+                self.json = Some(Json::Object(object));
+            }
+            _ => {
+                anyhow::bail!("unexpected character while parsing object: {next}");
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_object_key(&mut self, object: HashMap<String, Box<Json>>) -> anyhow::Result<()> {
+        self.parse_string()?;
+        if let Json::String(key) = self.json.take().unwrap() {
+            let next = self.next_skip_ws()?;
+            if next != b':' {
+                anyhow::bail!("expected ':', found: {next}");
+            }
+
+            self.stack.push(State::Object((object, key)));
+            let next = self.next_skip_ws()?;
+            self.stack.push(State::New(next));
+        } else {
+            panic!("expected string object on self.json");
+        }
+        Ok(())
+    }
+
+    fn parse_object_continued(
+        &mut self,
+        mut object: HashMap<String, Box<Json>>,
+        key: String,
+    ) -> anyhow::Result<()> {
+        object.insert(key, Box::new(self.json.take().unwrap()));
+        let next = self.next_skip_ws()?;
+        match next {
+            b',' => {
+                let next = self.next_skip_ws()?;
+                if next != b'"' {
+                    anyhow::bail!("expected '\"' for object key, found: {next}");
+                }
+                self.parse_object_key(object)?;
+            }
+            b'}' => {
+                self.json = Some(Json::Object(object));
+            }
+            _ => anyhow::bail!("unexpected character: {next}, expected ',' or '}}'"),
+        }
+        Ok(())
+    }
+
+    fn parse_array(&mut self) -> anyhow::Result<()> {
+        let array = Vec::new();
+        match self.next_skip_ws()? {
+            b']' => self.json = Some(Json::Array(array)),
+            byte => {
+                self.stack.push(State::Array(array));
+                self.stack.push(State::New(byte));
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_array_continued(&mut self, mut array: Vec<Box<Json>>) -> anyhow::Result<()> {
+        array.push(Box::new(self.json.take().unwrap()));
+        match self.next_skip_ws()? {
+            b']' => self.json = Some(Json::Array(array)),
+            b',' => {
+                self.stack.push(State::Array(array));
+                let next = self.next_skip_ws()?;
+                self.stack.push(State::New(next));
+            }
+            next => anyhow::bail!("unexpected character while parsing array: {next}"),
+        }
+        Ok(())
+    }
+
+    fn next_skip_ws(&mut self) -> anyhow::Result<u8> {
+        self.byte = self
+            .reader
+            .by_ref()
+            .skip_while(|ch| {
+                ch.as_ref()
+                    .map(|b| b.is_ascii_whitespace())
+                    .unwrap_or(false)
+            })
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
+        Ok(self.byte)
+    }
 
     pub fn finish(self) -> Json {
         self.json.expect("finish called on unparsed json parser")
@@ -94,4 +234,87 @@ where
     let mut parser = Parser::new(reader);
     parser.parse()?;
     Ok(parser.finish())
+}
+
+#[test]
+fn test_null() {
+    let input = "null";
+    let reader = std::io::BufReader::new(std::io::Cursor::new(input));
+    let result = parse(reader).unwrap();
+    assert_eq!(result, Json::Null);
+}
+
+#[test]
+fn test_true() {
+    let input = "true";
+    let reader = std::io::BufReader::new(std::io::Cursor::new(input));
+    let result = parse(reader).unwrap();
+    assert_eq!(result, Json::Boolean(true));
+}
+
+#[test]
+fn test_false() {
+    let input = "false";
+    let reader = std::io::BufReader::new(std::io::Cursor::new(input));
+    let result = parse(reader).unwrap();
+    assert_eq!(result, Json::Boolean(false));
+}
+#[test]
+fn test_number() {
+    let input = "-123457";
+    let reader = std::io::BufReader::new(std::io::Cursor::new(input));
+    let result = parse(reader).unwrap();
+    assert_eq!(result, Json::Number(-123457));
+}
+
+#[test]
+fn test_string() {
+    let input = "\"Hello, World!\"";
+    let reader = std::io::BufReader::new(std::io::Cursor::new(input));
+    let result = parse(reader).unwrap();
+    assert_eq!(result, Json::String("Hello, World!".into()));
+}
+
+#[test]
+fn test_object() {
+    let input = "
+	{
+		\"Key\": \"Value\",
+		\"KeyTwo\": 1234
+	}
+	";
+    let reader = std::io::BufReader::new(std::io::Cursor::new(input));
+    let result = parse(reader).unwrap();
+    assert_eq!(
+        result,
+        Json::Object(HashMap::from_iter(
+            [
+                (
+                    "Key".to_string(),
+                    Box::new(Json::String("Value".to_string()))
+                ),
+                ("KeyTwo".to_string(), Box::new(Json::Number(1234)))
+            ]
+            .into_iter()
+        ))
+    );
+}
+
+#[test]
+fn test_array() {
+    let input = "
+	[
+		\"Value\",
+		1234
+	]
+	";
+    let reader = std::io::BufReader::new(std::io::Cursor::new(input));
+    let result = parse(reader).unwrap();
+    assert_eq!(
+        result,
+        Json::Array(vec![
+            Box::new(Json::String("Value".to_string())),
+            Box::new(Json::Number(1234)),
+        ])
+    );
 }
