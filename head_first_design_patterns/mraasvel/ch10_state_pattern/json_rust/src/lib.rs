@@ -28,7 +28,6 @@ enum State {
 pub struct Parser<R: BufRead> {
     reader: Peekable<Bytes<R>>,
     json: Option<Json>,
-    byte: u8,
     stack: Vec<State>,
 }
 
@@ -37,7 +36,6 @@ impl<R: BufRead> Parser<R> {
         Self {
             reader: reader.bytes().peekable(),
             json: None,
-            byte: 0,
             stack: Vec::new(),
         }
     }
@@ -48,12 +46,8 @@ impl<R: BufRead> Parser<R> {
         while let Some(top) = self.stack.pop() {
             match top {
                 State::New(next) => self.new_state(next)?,
-                State::Object((object, key)) => {
-                    self.parse_object_continued(object, key)?;
-                }
-                State::Array(array) => {
-                    self.parse_array_continued(array)?;
-                }
+                State::Object((object, key)) => self.parse_object_continued(object, key)?,
+                State::Array(array) => self.parse_array_continued(array)?,
             }
         }
         Ok(())
@@ -62,20 +56,21 @@ impl<R: BufRead> Parser<R> {
     fn new_state(&mut self, byte: u8) -> anyhow::Result<()> {
         assert!(self.json.is_none());
         match byte {
-            b'-' | b'0'..=b'9' => self.parse_number()?,
-            b'n' => self.parse_null()?,
-            b't' | b'f' => self.parse_bool()?,
-            b'"' => self.parse_string()?,
-            b'{' => self.parse_object()?,
-            b'[' => self.parse_array()?,
-            _ => {}
+            b'-' | b'0'..=b'9' => self.parse_number(byte),
+            b'n' => self.parse_null(),
+            b't' | b'f' => self.parse_bool(byte),
+            b'"' => self.parse_string(),
+            b'{' => self.parse_object(),
+            b'[' => self.parse_array(),
+            _ => Err(anyhow::anyhow!(
+                "unexpected first byte while parsing new json object: {byte}"
+            )),
         }
-        Ok(())
     }
 
-    fn parse_number(&mut self) -> anyhow::Result<()> {
+    fn parse_number(&mut self, byte: u8) -> anyhow::Result<()> {
         let mut num = String::new();
-        num.push(self.byte as char);
+        num.push(byte as char);
         for ch in self.reader.by_ref() {
             let ch = ch?;
             if !ch.is_ascii_digit() {
@@ -102,8 +97,8 @@ impl<R: BufRead> Parser<R> {
         Ok(())
     }
 
-    fn parse_bool(&mut self) -> anyhow::Result<()> {
-        if self.byte == b't' {
+    fn parse_bool(&mut self, byte: u8) -> anyhow::Result<()> {
+        if byte == b't' {
             self.parse_expected(b"rue")?;
             self.json = Some(Json::Boolean(true));
         } else {
@@ -122,8 +117,8 @@ impl<R: BufRead> Parser<R> {
             b'n' => Ok(b'\n'),
             b'r' => Ok(b'\r'),
             b't' => Ok(b'\t'),
-            b'u' => anyhow::bail!("unicode not implemented"),
-            ch => anyhow::bail!("unknown escaped character: {ch}"),
+            b'u' => Err(anyhow::anyhow!("unicode not implemented")),
+            ch => Err(anyhow::anyhow!("unknown escaped character: {ch}")),
         }
     }
 
@@ -145,15 +140,9 @@ impl<R: BufRead> Parser<R> {
         let object = HashMap::new();
         let next = self.next_skip_ws()?;
         match next {
-            b'"' => {
-                self.parse_object_key(object)?;
-            }
-            b'}' => {
-                self.json = Some(Json::Object(object));
-            }
-            _ => {
-                anyhow::bail!("unexpected character while parsing object: {next}");
-            }
+            b'"' => self.parse_object_key(object)?,
+            b'}' => self.json = Some(Json::Object(object)),
+            _ => anyhow::bail!("unexpected character while parsing object: {next}"),
         }
         Ok(())
     }
@@ -169,10 +158,10 @@ impl<R: BufRead> Parser<R> {
             self.stack.push(State::Object((object, key)));
             let next = self.next_skip_ws()?;
             self.stack.push(State::New(next));
+            Ok(())
         } else {
             panic!("expected string object on self.json");
         }
-        Ok(())
     }
 
     fn parse_object_continued(
@@ -190,9 +179,7 @@ impl<R: BufRead> Parser<R> {
                 }
                 self.parse_object_key(object)?;
             }
-            b'}' => {
-                self.json = Some(Json::Object(object));
-            }
+            b'}' => self.json = Some(Json::Object(object)),
             _ => anyhow::bail!("unexpected character: {next}, expected ',' or '}}'"),
         }
         Ok(())
@@ -226,15 +213,15 @@ impl<R: BufRead> Parser<R> {
     }
 
     fn next(&mut self) -> anyhow::Result<u8> {
-        self.byte = self
+        let byte = self
             .reader
             .next()
             .ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
-        Ok(self.byte)
+        Ok(byte)
     }
 
     fn next_skip_ws(&mut self) -> anyhow::Result<u8> {
-        self.byte = self
+        let byte = self
             .reader
             .by_ref()
             .find(|ch| {
@@ -243,7 +230,7 @@ impl<R: BufRead> Parser<R> {
                     .unwrap_or(false)
             })
             .ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
-        Ok(self.byte)
+        Ok(byte)
     }
 
     pub fn finish(self) -> Json {
