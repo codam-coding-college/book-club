@@ -112,14 +112,29 @@ impl<R: BufRead> Parser<R> {
         Ok(())
     }
 
+	fn next_escaped_char(&mut self) -> anyhow::Result<u8> {
+		let next = self.next()?;
+		match next {
+			b'"' | b'\\' => Ok(next),
+			b'b' => Ok(0x08), // \b
+			b'f' => Ok(0x0C), // \f
+			b'n' => Ok(b'\n'),
+			b'r' => Ok(b'\r'),
+			b't' => Ok(b'\t'),
+			b'u' => anyhow::bail!("unicode not implemented"),
+			ch => anyhow::bail!("unknown escaped character: {ch}"),
+		}
+	}
+
     fn parse_string(&mut self) -> anyhow::Result<()> {
         let mut result = Vec::new();
         while let Some(ch) = self.reader.next() {
             let ch = ch?;
-            if ch == b'"' {
-                break;
-            }
-            result.push(ch);
+			match ch {
+				b'"' => break,
+				b'\\' => result.push(self.next_escaped_char()?),
+				ch => result.push(ch),
+			}
         }
         self.json = Some(Json::String(String::from_utf8(result)?));
         Ok(())
@@ -207,6 +222,11 @@ impl<R: BufRead> Parser<R> {
         }
         Ok(())
     }
+
+	fn next(&mut self) -> anyhow::Result<u8> {
+		self.byte = self.reader.next().ok_or_else(|| anyhow::anyhow!("unexpected eof"))??;
+		Ok(self.byte)
+	}
 
     fn next_skip_ws(&mut self) -> anyhow::Result<u8> {
         self.byte = self
