@@ -24,13 +24,14 @@ def substrings_between(_str: str, _open: str, _close: str, /) -> (list[str] | No
         if (end := _str.find(_close, start)) == -1:
             return None
 
-        return start, end
+        return start + 1, end
 
     idx = 0
     matches: list[str] = []
     while (idxs := get_next_substring(idx=idx)) is not None:
         start, end = idxs
-        matches.append(_str[start + 1 : end])
+        if start != end:
+            matches.append(_str[start : end])
         idx = end + 1
 
     return matches

@@ -18,7 +18,8 @@ def test_wrong_inputs(_str: str, _open: str, _close: str):
     argvalues=[
         ('[a[b[c', '[', ']'),
         ('[', '[', ']'),
-        (']', '[', ']')
+        (']', '[', ']'),
+        ('[][][]', '[', ']'),
     ]
 )
 def test_empty_list(_str: str, _open: str, _close: str):
