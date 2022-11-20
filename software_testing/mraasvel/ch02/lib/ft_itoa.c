@@ -1,9 +1,7 @@
 #include <stdlib.h>
-#include <stdbool.h>
-#include <stdio.h>
 
 static int fill_chars(unsigned int n, int index, char* dest) {
-	if (n / 10 != 0) {
+	if (n >= 10) {
 		index = fill_chars(n / 10, index, dest);
 	}
 	dest[index] = (n % 10) + '0';
@@ -19,7 +17,8 @@ char* ft_itoa(int n) {
 	int index = 0;
 	unsigned int x = n;
 	if (n < 0) {
-		result[index++] = '-';
+		result[0] = '-';
+		index = 1;
 		x = -n;
 	}
 	index = fill_chars(x, index, result);

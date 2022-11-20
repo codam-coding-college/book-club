@@ -16,7 +16,6 @@
  IN/OUT: 120, -120
 */
 
-
 // Point of this macro is that it's a parameterized test while still showing the expansion of the variables
 // due to the making being processed pre-compile time by the preprocessor.
 // It also stringifies the input integer using `#`
@@ -27,30 +26,37 @@
 		free(result); \
 	} while(0);
 
-Test(ft_itoa, one) {
+// What the macro expands to
+Test(libft_itoa, oneExample) {
+	char* result = ft_itoa(1);
+	cr_assert(strcmp(result, "1") == 0);
+	free(result);
+}
+
+Test(libft_itoa, one) {
 	ITOA_TEST(1);
 }
 
-Test(ft_itoa, negative_one) {
+Test(libft_itoa, negative_one) {
 	ITOA_TEST(-1);
 }
 
-Test(ft_itoa, zero) {
+Test(libft_itoa, zero) {
 	ITOA_TEST(0);
 }
 
-Test(ft_itoa, int_max) {
+Test(libft_itoa, int_max) {
 	ITOA_TEST(2147483647);
 }
 
-Test(ft_itoa, int_min) {
+Test(libft_itoa, int_min) {
 	ITOA_TEST(-2147483648);
 }
 
-Test(ft_itoa, in_value) {
+Test(libft_itoa, in_value) {
 	ITOA_TEST(120);
 }
 
-Test(ft_itoa, out_value) {
+Test(libft_itoa, out_value) {
 	ITOA_TEST(-120);
 }

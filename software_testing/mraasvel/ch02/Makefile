@@ -16,7 +16,10 @@ build: ${BUILD_DIR}
 ${BUILD_DIR}:
 	cmake ${CMAKE_FLAGS} -B ${BUILD_DIR} -S .
 
-run: build
+# No executable so run is just running tests
+run: test
+
+test: build
 	${TEST_EXECUTABLE}
 
 ifndef DEBUG
@@ -27,4 +30,4 @@ endif
 clean:
 	$(RM) -r ${BUILD_DIR}
 
-.PHONY: clean run build
+.PHONY: clean run build test
