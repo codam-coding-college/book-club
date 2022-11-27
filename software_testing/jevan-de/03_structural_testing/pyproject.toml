@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "03-structural-testing"
+version = "0.1.0"
+description = ""
+authors = ["jesse.van.der.wolf <jevan-de@student.codam.nl>"]
+readme = "README.md"
+packages = [{include = "03_structural_testing"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pytest = "^7.2.0"
+coverage = "^6.5.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
