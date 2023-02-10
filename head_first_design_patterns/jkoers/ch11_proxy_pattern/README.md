@@ -8,7 +8,7 @@ make
 ./rpc server 4242
 
 # in different terminal run client
-./rpc client 172.0.0.1 4242
+./rpc client 127.0.0.1 4242
 ```
 
 ## Goals
