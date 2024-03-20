@@ -1,3 +1,7 @@
 .venv/
 *.lock
+
 .pytest_cache
+
+.coverage
+htmlcov/
