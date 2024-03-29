@@ -11,6 +11,8 @@ bool checkPalindromePermutation(std::string input)
             index = input[i] - 97;
         else if (input[i] >= 65 && input[i] <= 90)
             index = input[i] - 65;
+        else if (input[i] == ' ')
+            continue ;
         else
         {
             std::cout << input[i] << ": invalid input" << std::endl;
