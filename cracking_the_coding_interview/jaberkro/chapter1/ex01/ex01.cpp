@@ -36,11 +36,6 @@ int main(int argc, char **argv)
 */
 
 /* 
-    Compilation:
-    c++ -Wall -Werror -Wextra ex01.cpp -o isUnique
-*/
-
-/* 
     Big O Notation:
     N * (N - 1)
     O(N^2)
