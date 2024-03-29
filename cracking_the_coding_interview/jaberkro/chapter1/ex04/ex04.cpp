@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
     if (argc != 2)
     {
-        std::cout << "Usage: ./palindrome <your input as one string>" << std::endl;
+        std::cout << "Usage: ./palindromePermutation <your input as one string>" << std::endl;
         return (1);
     }
     if (checkPalindromePermutation(argv[1]) == true)
