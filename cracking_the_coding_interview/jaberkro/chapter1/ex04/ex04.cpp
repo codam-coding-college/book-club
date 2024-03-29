@@ -48,11 +48,6 @@ int main(int argc, char **argv)
 */
 
 /*
-    Compilation:  
-    c++ ex04.cpp -Wall -Wextra -Werror -o palindrome
-*/
-
-/*
     Big O Notation:
     O(N)
 */
