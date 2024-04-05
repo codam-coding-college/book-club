@@ -17,7 +17,7 @@ public class IsUniqueTest {
 
     @Test
     void uniqueString() {
-        assertTrue(isUnique.isUnique("abcdefg"));
+        assertTrue(isUnique.isUnique("abc de fg"));
     }
 
     @Test
